@@ -5,3 +5,26 @@
 .Rhistory
 __pycache__/
 *.pyc
+
+# Data files
+*.dta
+*.csv
+*.tsv
+*.xls
+*.xlsx
+*.xlt
+*.xlsm
+*.sav
+*.sas7bdat
+*.rds
+*.rda
+*.RData
+*.parquet
+*.feather
+*.h5
+*.hdf5
+*.json
+*.jsonl
+*.dbf
+*.sqlite
+*.db

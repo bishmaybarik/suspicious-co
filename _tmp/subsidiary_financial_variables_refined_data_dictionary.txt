@@ -1,0 +1,441 @@
+Data dictionary: subsidiary_financial_variables_refined.dta
+Project: RBI ODI subsidiary balance-sheet / cash-flow scraping
+File location: 02_clean/subsidiary/subsidiary_financial_variables_refined.dta
+CSV mirror: 02_clean/subsidiary/subsidiary_financial_variables_refined.csv
+
+Purpose
+-------
+This dataset is a subsidiary-year financial panel built from downloaded subsidiary
+financial-statement PDFs and parent annual-report AOC-1 fallback tables. It is
+intended to support later OFBV / IRR work. It does not calculate IRR.
+
+Data structure: how to read the file
+------------------------------------
+The dataset is a subsidiary-financial-statement panel. Each row is one observed
+financial-statement source for a foreign subsidiary/entity in a given fiscal year.
+The core observational unit for most analysis is:
+
+  target_id x fiscal_year
+
+There can be more than one row for a target_id x fiscal_year because the scraper
+may find multiple candidate PDFs or multiple source rows for the same subsidiary.
+Use preferred_for_target_year == 1 to keep the selected best row within each
+target-year.
+
+The hierarchy is:
+
+  Indian parent company -> subsidiary level -> foreign entity/subsidiary
+
+The column parent is the Indian top-parent bucket. The column entity_name is the
+foreign subsidiary/entity whose financial statement was searched or parsed. The
+column level gives how far down the subsidiary chain the entity sits from the
+Indian parent. For example:
+
+  level 0 = directly held foreign entity / first reported foreign entity
+  level 1 = subsidiary of a level-0 entity
+  level 2 = subsidiary further down the chain
+
+The column immediate_parent records the entity's direct parent in that chain,
+which may itself be another foreign subsidiary rather than the Indian parent.
+
+The parent/entity mapping comes from the subsidiary mapping files, especially:
+
+  _tmp/subsidiaries_shared_uin.csv
+  _tmp/subsidiaries_shared_uin.dta
+
+Rows where a UIN could be claimed by multiple top-30 Indian parents were excluded
+from this final dataset when attribution_rule == "multiple_top30_claimants_review".
+Those cases require manual attribution and should not be added back automatically.
+
+Indian parent companies
+-----------------------
+The final dataset contains two source groups.
+
+1. The main PDF-scraped group: 25 Indian parent buckets with official/company
+   subsidiary PDFs or combined subsidiary financial-statement PDFs.
+
+2. The AOC-1 fallback group: 3 Indian parent buckets where standalone subsidiary
+   PDFs were not sufficiently available, so parent annual-report AOC-1 tables were
+   parsed instead.
+
+The 25 main PDF-scraped Indian parent buckets are:
+
+  ADANI PORT AND SPECIAL ECONOMIC
+  BHARAT PETRORESOURCES LTD
+  BHARTI AIRTEL LIMITED
+  BIOCON BIOLOGICS LIMITED
+  GLENMARK PHARMACEUTICALS LTD.
+  HINDALCO INDUSTRIES LIMITED
+  ICICI BANK LIMITED
+  INDIAN OIL CORPORATION LTD.
+  JSW STEEL LIMITED
+  MAHINDRA & MAHINDRA LTD
+  OIL INDIA LIMITED
+  ONGC VIDESH LTD.
+  PIRAMAL ENTERPRISES LTD
+  RELIANCE ENERGY GENERATION & DI
+  RELIANCE INDUSTRIES LTD
+  SAMVARDHANA MOTHERSON INTERNATI
+  SUN PHARMACEUTICAL INDUSTRIES L
+  SUZLON ENERGY LTD.
+  TATA CHEMICALS LIMITED
+  TATA COMMUNICATIONS LIMITED
+  TATA MOTORS PASSENGER VEHICLES
+  TATA STEEL LTD
+  UPL LIMITED
+  VEDANTA LIMITED
+  WIPRO LTD
+
+The 3 AOC-1 fallback Indian parent buckets are:
+
+  DR REDDYS LABORATORIES LTD
+  INFOSYS LTD
+  JINDAL STEEL AND POWER LTD
+
+Source rows and quality tiers
+-----------------------------
+source_type tells where the row came from:
+
+  standalone_or_combined_subsidiary_pdf
+    Parsed from a downloaded subsidiary financial-statement PDF. This can be a
+    standalone subsidiary PDF or a combined parent-published PDF containing many
+    subsidiary accounts.
+
+  parent_annual_report_aoc1
+    Parsed from the parent company's annual-report AOC-1 subsidiary summary. This
+    is useful for coverage but is less detailed than a standalone subsidiary
+    financial statement.
+
+data_quality_tier summarizes source quality and validation:
+
+  full_pdf_ready
+    Parsed from subsidiary PDF and ready for valuation.
+
+  full_pdf_review
+    Parsed or attempted from subsidiary PDF but needs review or has missing core
+    balance-sheet variables.
+
+  aoc1_ready
+    Parsed from AOC-1 fallback and ready for valuation.
+
+  aoc1_review
+    AOC-1 fallback row that is unmatched, incomplete, or needs review.
+
+For parent-level summaries, group by parent. For UIN-level ODI analysis, group or
+merge by uin. For subsidiary-chain analysis, use parent, immediate_parent, level,
+and entity_name together.
+
+Recommended use
+---------------
+For book-value / net-worth valuation, use rows where:
+  ready_for_valuation == 1
+  preferred_for_target_year == 1
+
+These rows have non-missing total_assets, total_liabilities, and equity; pass the
+accounting identity check; and are not flagged for manual review.
+
+For P&L variables, also check:
+  pl_identity_ok == 1
+
+For uncertain rows, inspect review_reason and the relevant *_evidence columns.
+
+Variable definitions
+--------------------
+
+target_id
+  Stable constructed identifier for one scraped subsidiary target. Combines a
+  normalized entity name, UIN, subsidiary level, and hash.
+
+parent
+  Top-30 Indian parent company to which this subsidiary target is attributed.
+
+level
+  Subsidiary level in the ownership chain from the Indian parent.
+
+entity_name
+  Foreign entity / subsidiary name being scraped.
+
+entity_country
+  Country of the foreign entity, where available from the subsidiary mapping.
+
+immediate_parent
+  Immediate parent of the foreign entity in the ownership chain.
+
+immediate_parent_country
+  Country of the immediate parent, where available.
+
+stake
+  Ownership stake percentage from the subsidiary mapping, where available.
+
+sector_code
+  Sector code from the subsidiary mapping / ODI data.
+
+sector_label
+  Text label for sector_code.
+
+uin
+  RBI ODI Unique Identification Number.
+
+shared_uin
+  Flag/count indicator from the mapping for whether the UIN is shared across
+  multiple claimants.
+
+n_top30_claimants
+  Number of top-30 Indian parents that could claim this UIN.
+
+top30_claimants
+  Semicolon/list-style field naming top-30 claimant parents for the UIN.
+
+attribution_rule
+  Rule used to attribute the UIN/entity to an Indian parent. Rows with
+  attribution_rule == "multiple_top30_claimants_review" were excluded from this
+  dataset by design.
+
+fiscal_year
+  Fiscal year associated with the parsed financial statement or AOC-1 row.
+
+period_end_date
+  Reporting period-end date parsed from the filing, where available.
+
+source_type
+  Source class for the row. Main values:
+    standalone_or_combined_subsidiary_pdf
+    parent_annual_report_aoc1
+
+source_url
+  Web URL from which the filing/report was downloaded or identified.
+
+source_domain
+  Domain parsed from source_url.
+
+source_title
+  Search/discovery result title or source descriptor.
+
+local_file
+  Local PDF path for standalone/combined subsidiary filings. Usually blank for
+  AOC-1 fallback rows because those use parent annual reports.
+
+currency
+  Reporting currency guessed from the filing text or AOC-1 table.
+
+units
+  Reporting units, where known. AOC-1 rows often specify units such as INR crore
+  or INR millions. Standalone PDF rows may have this blank.
+
+total_assets
+  Total assets parsed from the balance sheet.
+
+total_liabilities
+  Total liabilities parsed from the balance sheet. In some rows this is computed
+  as total_assets - equity when assets and equity were parsed directly.
+
+equity
+  Shareholders' equity / net worth / capital and reserves parsed from the
+  balance sheet. This is the core OFBV valuation variable.
+
+share_capital
+  Share capital parsed from the statement or notes, where available.
+
+reserves_surplus
+  Reserves and surplus / retained earnings / accumulated deficit parsed from the
+  statement or notes, where available.
+
+turnover
+  Revenue / turnover parsed from the P&L statement or AOC-1 table, where
+  available.
+
+profit_before_tax
+  Profit or loss before tax parsed from the P&L statement or AOC-1 table.
+
+provision_tax
+  Tax expense / provision for tax parsed from the P&L statement or AOC-1 table.
+  Sign conventions may vary by filing; use pl_identity_ok before analysis.
+
+profit_after_tax
+  Profit or loss after tax / profit for the year parsed from the P&L statement
+  or AOC-1 table.
+
+cash_flow_operating
+  Net cash flow from operating activities parsed from the cash-flow statement.
+  Negative values generally indicate cash used in operations.
+
+cash_flow_investing
+  Net cash flow from investing activities parsed from the cash-flow statement.
+  Negative values generally indicate cash used in investing activities.
+
+cash_flow_financing
+  Net cash flow from financing activities parsed from the cash-flow statement.
+  Negative values generally indicate cash used in financing activities.
+
+cash_end
+  Cash and cash equivalents at end of year / period parsed from the cash-flow
+  statement or related line.
+
+dividends_paid
+  Dividend paid / dividend payment line parsed from the filing, where available.
+  This is a filing-level clue, not necessarily the dividend received by the
+  Indian parent for IRR.
+
+interest_paid
+  Interest paid / finance costs paid line parsed from the filing, where
+  available.
+
+issue_share_capital
+  Issue/proceeds of share capital parsed from the cash-flow statement or equity
+  statement, where available.
+
+proceeds_borrowings
+  Proceeds from borrowings / loans parsed from the cash-flow statement, where
+  available.
+
+repayment_borrowings
+  Repayment of borrowings / loans / lease liabilities parsed from the cash-flow
+  statement, where available.
+
+shareholding_percent
+  Ownership/shareholding percentage parsed from AOC-1 tables where available.
+  For standalone PDF rows this is usually missing unless directly extracted.
+
+Evidence variables
+------------------
+Each evidence variable stores the source text line used to extract the
+corresponding numeric variable. These are essential for auditing.
+
+total_assets_evidence
+  Source line for total_assets.
+
+total_liabilities_evidence
+  Source line for total_liabilities.
+
+equity_evidence
+  Source line for equity.
+
+share_capital_evidence
+  Source line for share_capital.
+
+reserves_surplus_evidence
+  Source line for reserves_surplus.
+
+turnover_evidence
+  Source line for turnover.
+
+profit_before_tax_evidence
+  Source line for profit_before_tax.
+
+provision_tax_evidence
+  Source line for provision_tax.
+
+profit_after_tax_evidence
+  Source line for profit_after_tax.
+
+cash_flow_operating_evidence
+  Source line for cash_flow_operating.
+
+cash_flow_investing_evidence
+  Source line for cash_flow_investing.
+
+cash_flow_financing_evidence
+  Source line for cash_flow_financing.
+
+cash_end_evidence
+  Source line for cash_end.
+
+dividends_paid_evidence
+  Source line for dividends_paid.
+
+interest_paid_evidence
+  Source line for interest_paid.
+
+issue_share_capital_evidence
+  Source line for issue_share_capital.
+
+proceeds_borrowings_evidence
+  Source line for proceeds_borrowings.
+
+repayment_borrowings_evidence
+  Source line for repayment_borrowings.
+
+Extraction and quality variables
+--------------------------------
+
+extraction_method
+  PDF text/table extraction method used upstream, e.g. pdftotext/pdfplumber/OCR
+  variants.
+
+match_score
+  Discovery or AOC-1 name matching score. Higher means the source or AOC row was
+  a better match to entity_name.
+
+source_found
+  1 if an official/company source or AOC-1 row was found/matched; 0 otherwise.
+
+pdf_downloaded
+  1 if a PDF was downloaded or the AOC-1 fallback source was available; 0
+  otherwise.
+
+variables_parsed
+  1 if the core balance-sheet variables total_assets, total_liabilities, and
+  equity were all available after parsing/computation; 0 otherwise.
+
+accounting_identity_gap
+  total_assets - total_liabilities - equity.
+
+accounting_identity_ok
+  1 if the accounting identity gap is within the script's tolerance; 0 otherwise.
+  This checks internal consistency only. It does not prove the source row is the
+  correct company/year.
+
+needs_manual_review
+  1 if the row failed a source, section-location, parsing, date, currency, or
+  accounting validation gate; 0 if no review flag was raised.
+
+ready_for_valuation
+  1 if the row is suitable for OFBV/net-worth valuation under current rules:
+  source/PDF available, core balance-sheet variables parsed, accounting identity
+  OK, and needs_manual_review == 0.
+
+review_reason
+  Semicolon-separated reasons explaining why needs_manual_review was set.
+  Examples include balance_sheet_variables_missing, period_end_missing,
+  currency_missing, combined_pdf_section_not_found, accounting_identity_failed.
+
+aoc_match_status
+  For AOC-1 fallback rows: matched or not_matched. Blank for standalone PDF rows.
+
+aoc_company_name
+  Company name as printed in the AOC-1 table, where AOC fallback was used.
+
+data_quality_tier
+  Source/quality tier used for sorting and interpretation. Main values:
+    full_pdf_ready
+    full_pdf_review
+    aoc1_ready
+    aoc1_review
+
+pl_identity_ok
+  P&L consistency flag:
+    1  = profit_before_tax, provision_tax, and profit_after_tax reconcile under
+         one of the accepted tax sign conventions.
+    0  = P&L fields are present but do not reconcile.
+    -1 = P&L identity is not testable because one or more fields are missing.
+
+source_priority
+  Numeric priority used to choose the preferred row within each target-year.
+  Lower is better. Current ordering gives priority to ready full-PDF rows, then
+  ready AOC-1 rows, then review full-PDF rows, then review AOC-1 rows.
+
+preferred_for_target_year
+  1 for the selected best row for each target_id x fiscal_year combination; 0
+  otherwise. Use this to avoid duplicate source rows for the same subsidiary-year.
+
+Notes and cautions
+------------------
+1. Missing values are intentional when extraction was not defensible.
+2. AOC-1 fallback rows are parent annual-report summaries, not full standalone
+   subsidiary financial statements.
+3. Cash-flow variables from subsidiary filings are supplementary and may not
+   equal ODI cash flows received by the Indian parent.
+4. For IRR construction, transaction-level remittances, disinvestments, loan
+   repayments, dividends received, and export adjustments need to come from APR /
+   transaction datasets and be merged later.
+5. Always inspect *_evidence before using surprising values.
