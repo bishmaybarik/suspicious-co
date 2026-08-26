@@ -10,7 +10,7 @@ from pathlib import Path
 
 script_path = Path(__file__).resolve().parent
 
-# ordered because 03 writes entity_enriched.parquet, which 04 to 07 consume
+# ordered because 03 writes entity_enriched.parquet, which 04 onwards consume
 script_list = [
     "01_audit_rows.py",
     "02_build_hierarchy.py",
@@ -19,6 +19,10 @@ script_list = [
     "05_analyse_coverage_financials.py",
     "06_audit_uin_structure.py",
     "07_make_figures.py",
+    "08_review_codex.py",
+    "09_analyse_chokepoints.py",
+    "10_analyse_names_and_stakes.py",
+    "11_make_figures_increment2.py",
 ]
 
 for script_name in script_list:

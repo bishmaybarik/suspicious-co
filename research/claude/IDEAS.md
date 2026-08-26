@@ -139,3 +139,74 @@ register rather than a 28-parent sample.
   balance sheet and few have more than one year; a panel is not available.
 - **No claim that `level` measures true ownership depth.** See C-F017; two
   measures are carried side by side throughout.
+
+
+---
+
+# Increment 2 additions
+
+Written after reviewing Codex commit `bb67b93`. Directions that duplicate work
+already done on that branch have been dropped; what remains is either new or
+explicitly complementary.
+
+## E. Highest priority for the parent project
+
+**E1 · Build the duplicate-evidence filter and re-run every financial result.**
+Follows directly from my review of X-F017. All 33 same-URL/different-name
+clusters share byte-identical `*_evidence` text, so the flag is mechanical:
+mark any row whose `equity_evidence` or `total_assets_evidence` string is
+shared with another `target_id`. 70 of the 560 valuation-ready rows are
+affected. Deliverable: a cleaned ready sample of roughly 460 rows, plus the
+gates from X-F012 (`total_assets > 0`, `total_liabilities >= 0`). Everything
+financial on either branch should be re-estimated on it.
+
+**E2 · Re-parse the multi-column combined PDFs.** The Tata Communications
+evidence line is a garbled OCR capture of a four-column table. That is a
+fixable upstream bug, not an irreducible data limit, and it is plausibly the
+largest single source of error in the financial layer.
+
+## F. Structural directions opened by increments 1 and 2
+
+**F1 · Largest-subtree test on gateway amplification (was A1, now more urgent).**
+C-F018 shows that 43% of the median group's network sits below one node, so
+C-F002's amplification numbers may be one subtree each. Recompute
+descendants-per-gateway after removing each gateway's single largest child
+subtree. If the Netherlands-versus-United States gap survives, C-F002 is about
+structuring; if it collapses, it is about acquisition size.
+
+**F2 · Does the name signal transfer across groups?** C-F020 is measured
+in-sample. Train the holding-name flag on 27 parents and test on the held-out
+one, rotating through all 28. A signal that transfers is a usable proxy for
+datasets with names but no ownership edges; one that does not is a description
+of these 28 groups' naming habits.
+
+**F3 · Predict descendant count, not just the holder flag.** C-F020 uses a
+binary outcome. Holding-named entities have 5.19 mean descendants against 1.14
+for unnamed ones. A count model within parent × country would say how much of
+the *size* of a subtree the name predicts.
+
+**F4 · Chokepoint vintage.** Combine C-F018 with the UIN year (C-F009): are
+single-node chokepoints characteristic of older structures built around one
+acquisition, or of newer ones too? This is testable inside the file and would
+distinguish "legacy architecture" from "current practice".
+
+**F5 · Independence benchmark for the routing matrix (was A8).** C-F022 and
+Codex's X-F007 both describe gateway-to-destination routing. Neither has a null.
+Compare each cell against the product of marginals and bootstrap by parent, so
+that "Mauritius routes Africa" becomes a tested statement rather than a
+description of two groups' subtrees.
+
+## G. Directions now closed
+
+- **A4 (partners at the top, wholly owned below): refuted.** See C-F021. The
+  raw gradient is a Reliance composition effect.
+- **Sector-by-depth: not estimable.** X-F006 shows 240 of the 242 deep
+  manufacturing entities come from two groups. With 28 parents and one dominant
+  group per deep sector there is no design that recovers a sector effect here.
+- **Sector transition along edges: low yield.** 54% of edges are same-sector
+  and the matrix is close to diagonal, because sector is largely inherited from
+  the ODI registration. The one informative cell is Financial & Insurance
+  Services above Manufacturing (35.9% of that row), which is just the holding
+  signature already captured by C-F013 and C-F020.
+- **Cross-border edge share: settled by Codex.** X-F008 is the most robust
+  structural number on either branch and needs no further work in this file.

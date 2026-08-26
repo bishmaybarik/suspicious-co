@@ -462,3 +462,255 @@ Hindalco rather than Motherson.
 | 13 | C-F012 mirrored PSU consortium chains | high | medium | medium | medium |
 | 14 | C-F011 Marshall Islands SPVs | medium-high | medium (n = 13) | low-medium | low-medium |
 | 15 | C-F013 holding-company financials | low | low-medium | low | low (validation) |
+
+---
+
+# Increment 2 additions (C-F018 to C-F022)
+
+Added after reviewing Codex commit `bb67b93`. These are new lines of enquiry
+that neither branch had investigated. All adopt the corrected zero-stake rule
+from `research/reviews/X-F010.md`: `stake == 0` is a missing code, so a
+minority filter applies only to entities with a strictly positive recorded
+stake.
+
+Code: `src/claude/09_analyse_chokepoints.py`,
+`src/claude/10_analyse_names_and_stakes.py`,
+`src/claude/11_make_figures_increment2.py`.
+
+## C-F018 · Half of all large Indian groups route more than 43% of their entire foreign network through a single company
+
+**Result.** The reconstructed ownership graph is a forest, so every ancestor
+of an entity is a dominator of it: removing any node on the path detaches
+everything below. For the 24 groups with at least 15 entities, the share of the
+group's foreign network sitting below its single largest node has a **median of
+43.2%**, and ten groups exceed 60% (the table lists those ten plus Sun
+Pharmaceutical, the next largest):
+
+| Group | entities | % below one node | that node | jurisdiction |
+|---|---|---|---|---|
+| Jindal Steel & Power | 108 | **98.1** | Jindal Steel and Power Mauritius Ltd | Mauritius |
+| UPL | 81 | **97.5** | UPL Corporation Ltd | Mauritius |
+| Tata Steel | 27 | **96.2** | T Steel Holdings Pte. Ltd. | Singapore |
+| Biocon Biologics | 23 | **95.5** | Biocon Biologics UK Limited | United Kingdom |
+| Glenmark Pharmaceuticals | 38 | 81.1 | Glenmark Holdings SA | Switzerland |
+| Bharti Airtel | 134 | 79.7 | Bharti Airtel International Netherlands B.V | Netherlands |
+| Tata Communications | 50 | 67.3 | Tata Communications International Pte Ltd | Singapore |
+| Samvardhana Motherson | 309 | 64.3 | Samvardhana Motherson Automotive Systems Group B.V. | Netherlands |
+| Suzlon Energy | 37 | 63.9 | Suzlon Energy Limited | Mauritius |
+| Bharat Petroresources | 20 | 63.2 | BPRL International BV | Netherlands |
+| Sun Pharmaceutical | 75 | 54.1 | Sun Pharma (Netherlands) B.V | Netherlands |
+
+At the other end, Dr Reddy's routes only 7.5% through its largest node.
+**18 of the 24 chokepoint companies sit in a holding jurisdiction** (Mauritius
+5, Netherlands 5, Singapore 5, Switzerland, Cyprus, Channel Islands).
+
+**Denominator.** Numerator = the largest `n_descendants` in the group;
+denominator = the group's entities minus the chokepoint itself.
+
+**Is it mechanical?** This is the obvious objection: a group with one
+registered outward investment has one gateway and is concentrated by
+construction (Jindal has exactly one UIN). It does not survive as an
+explanation. The correlation between the number of level-0 gateways and the
+share below one node is **−0.351**, and among the 16 groups with five or more
+gateways the median is still **41.8%**. Bharti Airtel has six gateways and
+still routes 79.7% through one Dutch company; Motherson has nine and routes
+64.3% through one; Glenmark has eight and routes 81.1%.
+
+**Robustness.** Uses only the graph and is immune to the stake and financial
+data problems. Unaffected by the venture-fund denominator issue except for
+Reliance itself, whose chokepoint *is* a fund vehicle (34.4%).
+
+**Mundane explanation.** A single acquisition or regional holding vehicle is
+the natural way to consolidate a foreign business, and a group that made one
+big foreign acquisition will look like this by construction. The finding is
+that this is the *typical* architecture rather than the exception, and that the
+chokepoint is overwhelmingly located in a holding jurisdiction rather than in
+the operating market.
+
+**Falsification.** If the chokepoint were simply "the biggest acquisition",
+its jurisdiction should match the acquisition's operating country. It does not:
+18 of 24 sit in a jurisdiction with almost no operating activity in the data.
+
+**Figure.** `fig09_single_node_chokepoints.png`. **Tables.**
+`chokepoint_single_node`, `chokepoint_summary`.
+**Research value: 5/5.**
+
+## C-F019 · Three jurisdictions sit above 61% of all Indian foreign subsidiaries
+
+**Result.** Because the graph is a forest, "how many entities would be detached
+if jurisdiction *j* were removed" is exactly "how many entities have *j*
+strictly upstream". A greedy cover over jurisdictions:
+
+| Step | Jurisdiction | newly detached | cumulative % of 1,834 |
+|---|---|---|---|
+| 1 | Netherlands | 538 | 29.3 |
+| 2 | United States | 316 | 46.6 |
+| 3 | Mauritius | 258 | **60.6** |
+| 4 | United Kingdom | 129 | 67.7 |
+| 5 | Singapore | 102 | 73.2 |
+| 6 | Cyprus | 75 | 77.3 |
+
+Per resident entity, the leverage differs by more than an order of magnitude:
+Jersey 32.0 entities held below per resident entity, Estonia 23.5, Cyprus 7.6,
+Mauritius 5.4, Netherlands 4.8 — against **0.98 for the United States**, which
+has the most entities of any jurisdiction and almost no leverage.
+
+**Robustness.** Netherlands: pooled 29.3%, equal-parent 20.8%, leave-one-parent-out
+22.3%–32.8%, affecting 16 of 28 groups. Mauritius: 16.7% pooled, 14.6%
+equal-parent, LOO 11.7%–19.1%, 10 groups. United States: 19.4% / 14.1% /
+14.4%–22.1%, 16 groups. Removing the two venture-fund portfolios reorders the
+first three (Netherlands, Mauritius, United States) and gives 58.1% at step 3
+on 1,725 entities — the substance is unchanged.
+
+**Fragile cells, stated as such.** Jersey (pooled 3.5% but equal-parent 0.8%,
+2 parents), Estonia (1 parent) and Cyprus (5 parents) have high leverage on
+very few groups. Quote them with n.
+
+**Why it matters.** It converts an impressionistic claim about conduit
+jurisdictions into a covering number: a shock to Dutch holding-company law
+would sit above 29% of these networks; three jurisdictions span 61%. This is a
+concentration-of-exposure statement about Indian outward FDI that does not
+require any assumption about intent.
+
+**Mundane explanation.** Regional holding structures cluster where corporate
+law, treaty networks and financing infrastructure are convenient; the same
+three jurisdictions would appear for most multinationals.
+
+**Figure.** `fig10_jurisdiction_criticality.png`. **Tables.**
+`jurisdiction_criticality`, `jurisdiction_greedy_cover`.
+**Research value: 5/5.**
+
+## C-F020 · A company's name predicts its position in the ownership chain, even within parent and country
+
+**Result.** Entities whose name contains *Holding(s)*, *Holdco*, *Investment(s)*
+hold at least one subsidiary **64.4% of the time**, against **17.5%** for all
+other entities — a raw gap of **46.9 percentage points** on 177 entities across
+24 of the 28 groups. The signal survives the two obvious confounds: demeaning
+within **parent × country cells**, the gap is still **23.3 percentage points**.
+Leave-one-parent-out moves the raw gap only between 45.4 and 48.8 points.
+
+Legal form carries an independent signal:
+
+| Legal form | n | % holding at least one subsidiary |
+|---|---|---|
+| B.V. (Netherlands) | 114 | **50.0** |
+| Pte Ltd (Singapore) | 53 | 37.7 |
+| S.A.R.L. (Lux/France) | 18 | 33.3 |
+| GmbH (Germany) | 79 | 32.9 |
+| Inc (United States) | 168 | 27.4 |
+| Pty (Australia/South Africa) | 101 | 15.8 |
+| **LLC (United States)** | 137 | **13.9** |
+
+All-entity baseline: 22.0%.
+
+**Precision and recall, stated honestly.** The holding-name flag is a
+**high-precision, low-recall** classifier: 64.4% precision, **28.2% recall**.
+Most holding companies are not named as such (Novelis Inc, Aleris Corporation,
+Wipro LLC), so the flag identifies a clean subset rather than the whole class.
+
+**Why it matters — methodological.** Corporate-structure datasets very often
+have names and jurisdictions but no ownership graph. This shows the name alone
+carries substantial information about function, and it does so *conditional on
+country*, so it is not simply a proxy for "Dutch companies are called Holding
+B.V.". For any dataset with names but no edges, the flag gives a usable
+holding-company proxy with a measurable error rate.
+
+**Mundane explanation.** Naming conventions are chosen by the group to signal
+function, and some jurisdictions require a form (B.V., GmbH) that is
+conventionally used for holding purposes. That is precisely why it works.
+
+**Falsification.** If the effect were purely a jurisdiction artefact it would
+disappear within country. It does not — 23.3pp survives parent × country
+demeaning.
+
+**Figure.** `fig11_name_predicts_role.png`. **Tables.**
+`name_tokens_vs_role`, `legal_form_vs_role`, `name_signal_robustness`.
+**Research value: 4/5.**
+
+## C-F021 · Layering does not dilute ownership — and the tempting reading of that is wrong
+
+**Result.** For the 1,083 non-level-0 entities whose entire chain has recorded
+positive stakes (65.6% of 1,650), cumulative ownership below the first foreign
+entity has a **median of 100%** and **53.6% of chains are exactly 100% at every
+step**. Depth does not erode it: mean cumulative ownership is 87.3% at level 2,
+91.9% at level 3, 93.9% at level 5 and 93.9% at level 8. Layers are wholly
+owned conduits, not partial-ownership steps.
+
+**The falsification, which is the more useful half.** The raw data suggest
+"partners at the top, wholly owned below": single-edge stakes average 76.7% at
+levels 1–2 and 92.4% at level 3+, a 15.7-point gap. **Within parent the gap is
+2.0 points**, and excluding Reliance the cumulative-ownership gap vanishes
+entirely (87.4% shallow versus 86.4% deep). The apparent depth gradient is a
+between-group composition effect driven by Reliance's minority venture holdings,
+which sit almost entirely at level 1. My own increment-1 idea A4 predicted the
+opposite and is refuted.
+
+**Selection caveat, on the figure.** Chain completion falls with depth in a
+non-monotonic way (66.5% at level 1, 72.6% at level 2, 50.0% at level 4, 45.6%
+at level 6) because a longer chain needs more edges to have a positive recorded
+stake. The completed-chain sample is therefore selected toward well-documented
+chains. The direction of that bias is unknown, so the level-by-level means
+should be read as descriptive.
+
+**Why it matters.** If depth diluted economic ownership, deep entities would
+matter less for consolidated valuation and the depth statistics would be
+economically minor. They do not: a level-8 entity is, on this evidence, as
+wholly owned as a level-1 entity. Depth is about structure, not about
+diminishing economic claims — which is exactly what makes it worth measuring.
+
+**Figure.** `fig12_no_ownership_dilution.png`. **Tables.**
+`cumulative_ownership_by_level`, `cumulative_ownership_completion`,
+`ownership_dilution_by_depth`.
+**Research value: 4/5 (the falsification is the more valuable part).**
+
+## C-F022 · The Netherlands and Mauritius divide the world between them
+
+**Result.** Assigning each entity the first foreign jurisdiction on its path,
+and asking which gateway each destination is reached through:
+
+- **The Netherlands is the modal gateway for 11 of the 31 destinations** with
+  at least 12 entities: France (62.8%), Spain (57.1%), China (50.8%),
+  Portugal (50.0%), Brazil (48.1%), Germany (45.7%), Thailand (43.8%),
+  Canada (38.5%), Russia (35.7%), South Korea (35.7%), Poland (31.2%).
+- **Mauritius is the modal gateway for 9**: Namibia (100%), Botswana (100%),
+  Turkey (76.9%), Indonesia (61.5%), South Africa (51.2%), Australia (35.2%),
+  UAE (28.6%), Hong Kong (21.4%), Italy (20.0%).
+
+The split is regional: the Netherlands routes continental Europe, Latin America
+and East Asia; Mauritius routes Africa, Australia and the Middle East. The
+median destination is reached through its top gateway 50.8% of the time.
+
+**Robustness.** The routing-concentration table reports how many parents use
+each modal route, and this is where the finding needs care. The strong cells
+are Netherlands → Germany (5 parents), Netherlands → Brazil (5),
+Netherlands → Canada (5), Mauritius → South Africa (6), Mauritius → Australia
+(4), Mauritius → Mauritius (8). The 100% cells (Namibia, Botswana) rest on 2
+and 1 parent respectively and are single-group facts.
+
+**Hierarchy mechanics.** A single gateway with a large subtree mechanically
+dominates the destinations inside that subtree, so this measure is not
+independent of C-F018. The parent counts are the guard: a route used by five
+or six different groups is not one group's subtree.
+
+**Mundane explanation.** Bilateral investment treaties and historical ties —
+the India–Mauritius relationship for Africa, Dutch holding structures for the
+EU single market — are the obvious drivers, and both predate any of these
+investments.
+
+**Table.** `destination_routing_concentration`.
+**Research value: 3/5 pooled, 4/5 restricted to the multi-parent routes.**
+
+## Updated ranked shortlist (increments 1 and 2)
+
+| Rank | Code | Claim | Robustness |
+|---|---|---|---|
+| 1 | C-F018 | median large group routes 43% of its foreign network through one company | high; not mechanical (r = −0.35 with gateway count) |
+| 2 | C-F019 | three jurisdictions sit above 61% of all entities | high; equal-parent and LOO reported |
+| 3 | C-F002 | gateway amplification by first-hop jurisdiction | high; LOO-checked, 12 parents |
+| 4 | C-F003 | 59% of entities held through a financial centre; 0–97% across groups | high; four robustness cuts |
+| 5 | C-F020 | names predict network position within parent × country | high; 23pp within-cell, LOO 45–49pp raw |
+| 6 | C-F001 | ODI register sees roughly one entity in ten | medium; skewed, median 2 per UIN |
+| 7 | C-F021 | layering does not dilute ownership | medium; completion-rate selection |
+| 8 | C-F004 | breadth and depth are different choices | medium; see X-F006 review |
+| 9 | C-F008 | vintage shift in gateway jurisdictions | low-medium; 16–54 UINs per bin |
+| 10 | C-F022 | Netherlands and Mauritius divide the world regionally | medium on multi-parent routes only |
