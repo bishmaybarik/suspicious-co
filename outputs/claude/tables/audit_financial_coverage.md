@@ -1,0 +1,21 @@
+| variable             |   pct_nonmissing_all_rows |   pct_nonmissing_preferred |
+|:---------------------|--------------------------:|---------------------------:|
+| total_assets         |                      27   |                       28   |
+| total_liabilities    |                      23.8 |                       24.7 |
+| equity               |                      27.3 |                       28.4 |
+| share_capital        |                      31.5 |                       32.7 |
+| reserves_surplus     |                      13.7 |                       14.1 |
+| turnover             |                      27   |                       27.9 |
+| profit_before_tax    |                      23.2 |                       24.1 |
+| provision_tax        |                      25.9 |                       26.9 |
+| profit_after_tax     |                      20.5 |                       21.1 |
+| cash_flow_operating  |                       8.9 |                        9.1 |
+| cash_flow_investing  |                       8.3 |                        8.5 |
+| cash_flow_financing  |                       7.9 |                        8.1 |
+| cash_end             |                       8   |                        8.4 |
+| dividends_paid       |                       5.2 |                        5.4 |
+| interest_paid        |                       7.8 |                        8.2 |
+| issue_share_capital  |                       1.2 |                        1.2 |
+| proceeds_borrowings  |                       2.3 |                        2.4 |
+| repayment_borrowings |                       2.8 |                        3   |
+| shareholding_percent |                       1.5 |                        1.6 |
