@@ -28,3 +28,24 @@ __pycache__/
 *.dbf
 *.sqlite
 *.db
+
+# Canonical/private research data
+01_data/subsidiary_financial_variables_refined.dta
+_tmp/subsidiary_financial_variables_refined_data_dictionary.txt
+
+# Agent runtime files
+.agent_runtime/
+**/.claude/settings.local.json
+
+# Python
+__pycache__/
+*.pyc
+
+# LaTeX build intermediates
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
