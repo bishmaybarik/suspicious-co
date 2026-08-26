@@ -17,6 +17,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT = ROOT / "outputs/codex"
 PIPELINE = ROOT / "src/codex/research_pipeline.py"
+REVIEW_PIPELINE = ROOT / "src/codex/review_increment.py"
 
 
 def require(condition: bool, message: str) -> None:
@@ -102,6 +103,49 @@ def validate(output: Path) -> dict[str, int]:
         figure_count += 1
     require(figure_count >= 6, "expected at least six figures")
 
+    review_table_count = 0
+    review_figure_count = 0
+    review = output / "review"
+    if review.exists():
+        review_metrics = json.loads(
+            (review / "review_metrics.json").read_text(encoding="utf-8")
+        )
+        require(
+            review_metrics["reviewed_commit"]
+            == "5ab6cb5944ad6fe8193f03b71f7a918ac4d24076",
+            "unexpected reviewed commit",
+        )
+        gateway_parent = pd.read_csv(
+            review / "tables/gateway_dependency_by_parent.csv"
+        )
+        stake = pd.read_csv(review / "tables/stake_depth_sensitivity.csv")
+        mismatch = pd.read_csv(review / "tables/depth_mismatch_sensitivity.csv")
+        require(len(gateway_parent) == 28, "review parent count mismatch")
+        require(
+            gateway_parent["target_entities"].sum() == len(occurrences),
+            "review gateway denominator mismatch",
+        )
+        require(
+            int(mismatch.loc[mismatch["counting_unit"].eq("target_id"), "mismatches"].iloc[0])
+            == metrics["hierarchy"]["complete_paths_with_reported_depth_mismatch"],
+            "review mismatch count differs from blind pipeline",
+        )
+        require(
+            stake["sample"].eq("all positive recorded stakes").sum() == 1,
+            "review stake base sample missing",
+        )
+        review_table_count = len(list((review / "tables").glob("*.csv")))
+        for figure in sorted((review / "figures").glob("*.png")):
+            with Image.open(figure) as image:
+                require(
+                    image.width >= 1000 and image.height >= 700,
+                    f"small review figure: {figure}",
+                )
+                image.verify()
+            review_figure_count += 1
+        require(review_table_count >= 15, "expected review tables")
+        require(review_figure_count >= 2, "expected review figures")
+
     return {
         "targets": len(occurrences),
         "group_entities": len(group_entities),
@@ -109,6 +153,8 @@ def validate(output: Path) -> dict[str, int]:
         "paths": len(paths),
         "preferred_rows": len(preferred),
         "figures": figure_count,
+        "review_tables": review_table_count,
+        "review_figures": review_figure_count,
     }
 
 
@@ -123,14 +169,37 @@ def compare_rebuild(output: Path) -> int:
             stderr=subprocess.PIPE,
             text=True,
         )
+        subprocess.run(
+            [
+                sys.executable,
+                str(REVIEW_PIPELINE),
+                "--codex-output",
+                str(rebuilt),
+                "--output",
+                str(rebuilt / "review"),
+            ],
+            cwd=ROOT,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
         original_files = {
             path.relative_to(output)
             for path in output.rglob("*.csv")
-        } | {Path("key_metrics.json")}
+        } | {
+            Path("key_metrics.json"),
+            Path("review/review_metrics.json"),
+            Path("review/manifest.json"),
+        }
         rebuilt_files = {
             path.relative_to(rebuilt)
             for path in rebuilt.rglob("*.csv")
-        } | {Path("key_metrics.json")}
+        } | {
+            Path("key_metrics.json"),
+            Path("review/review_metrics.json"),
+            Path("review/manifest.json"),
+        }
         require(original_files == rebuilt_files, "rebuild produced a different output-file set")
         mismatches = [
             relative

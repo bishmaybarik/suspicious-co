@@ -121,6 +121,51 @@ City entities enter foreign-structure analysis, and verify the ten India-labeled
 downstream entities. Run all geography results with and without the 20 domestic,
 special-zone, or regional-label targets.
 
+## Priorities added after cross-agent review
+
+### X-I015 — Validate the UIN format before using vintage or type
+
+The 13-character structure is internally regular, but the supplied dictionary
+does not define its substrings. Obtain an RBI form specification or codebook for
+regional-office, investment-type, series, year, and serial fields. Validate the
+two UINs lacking level-0 targets separately. Until then, retain names such as
+`characters_6_9` in machine-readable work and describe “decoded year” as an
+inference.
+
+### X-I016 — Separate gateway choice from inherited acquisition topology
+
+For each level-0 vehicle, date and identify the controlling acquisition, then
+partition descendants into pre-acquisition entities, post-acquisition additions,
+and unknown. Re-estimate Dutch, Mauritian, Singaporean, and US amplification on
+gateway counts, parent-equal means, medians, and the no-majority-child-branch
+sample. If the Dutch gap is entirely inherited, frame it as acquisition routing
+rather than endogenous group complexity.
+
+### X-I017 — Complete missing entities without discarding reported geography
+
+The 78 edges to 18 normalized unobserved parent names all retain a reported
+immediate-parent country. Add explicit synthetic nodes with that country and an
+`identity_unobserved` flag, but do not impute upstream legal links or depth.
+Externally resolve the largest nodes, especially Dr Reddy's Laboratories SA,
+before computing group-level path exposure. Maintain separate bounds for known
+country / missing identity and fully observed legal paths.
+
+### X-I018 — Test whether dominant UIN channels persist through time
+
+X-F018 is static. Recover dated ownership snapshots and investment flows to test
+whether a modal UIN remains the economic channel after acquisitions and
+reorganizations. Compare the mapping's inherited UIN attribution with current
+legal first-hop ownership, and report Motherson-like cross-UIN short circuits as
+a separate architecture.
+
+### X-I019 — Estimate stake gradients within legal ownership class
+
+The pooled full-ownership gradient collapses under parent weighting. After
+repairing zero stakes, stratify by controlled subsidiary, joint venture,
+associate, and fund portfolio; then estimate within-parent and within-acquisition
+depth differences. This distinguishes genuine consolidation down a chain from
+Reliance-style portfolio composition.
+
 ## Negative controls and falsification
 
 - Reproduce every jurisdiction ranking with raw rows, unique targets,

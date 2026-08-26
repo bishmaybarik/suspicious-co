@@ -102,6 +102,13 @@ Among 1,650 nonroot edges:
 - 72 link to an observed named parent at another reported level;
 - 78 name an immediate parent absent from the target table.
 
+The last category is **identity-missing, not jurisdiction-missing**. All 78
+edges retain a nonblank `immediate_parent_country`, spanning 18 normalized
+parent names and nine reported countries. A synthetic or unresolved node should
+therefore preserve that country while flagging the absent legal-entity record.
+Replacing it with a generic unknown jurisdiction materially understates
+ancestor exposure for Dr Reddy's and smaller groups.
+
 Recursive traversal reaches the Indian parent for 1,687 of 1,834 targets
 (91.98%). The other 147 paths are truncated because they or an ancestor hit one
 of the 78 absent parent nodes. No cycles are produced.
@@ -182,6 +189,13 @@ Sector is not invariant within UIN: many UINs contain several sectors. Sector
 analyses therefore use entity targets, not UIN counts. Depth-sector associations
 are audited with leave-one-parent-out checks because a sector can be repeated
 through one parent's deep hierarchy.
+
+Every UIN has a 13-character fixed format, positions 6–9 parse as a plausible
+year, and the final four positions are digits. Those are internal string facts.
+The supplied dictionary does not define the substrings, so labels such as
+regional office, investment type, registration year, and serial remain inferred
+until verified against an external RBI specification. Only 184 of 186 UINs have
+an observed level-0 target in this file.
 
 ## Financial variables and comparability
 

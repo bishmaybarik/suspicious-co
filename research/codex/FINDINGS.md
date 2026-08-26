@@ -1,4 +1,4 @@
-# Blind-discovery findings
+# Research findings
 
 These are candidate empirical findings and research directions, not allegations
 of wrongdoing. Scores run from 1 (low) to 5 (high); total is the sum of surprise,
@@ -12,20 +12,22 @@ patterns that survive denominator and parent-group checks.
 | 1 | X-F007 | Netherlands and Mauritius are disproportionately present as ownership-path intermediaries | 5.0 | 4.5 | 5.0 | 5.0 | 19.5 |
 | 2 | X-F005 | Similar-sized groups have sharply different structural architectures | 5.0 | 5.0 | 5.0 | 4.5 | 19.5 |
 | 3 | X-F001 | Raw rows radically misweight parent and jurisdiction exposure | 5.0 | 5.0 | 5.0 | 4.0 | 19.0 |
-| 4 | X-F004 | Reported depth and reconstructable graph distance diverge materially | 5.0 | 5.0 | 4.5 | 4.0 | 18.5 |
-| 5 | X-F009 | A small set of high-outdegree hubs organizes much of the network | 5.0 | 4.5 | 4.5 | 4.5 | 18.5 |
-| 6 | X-F008 | A majority of nonroot edges are cross-border under robust weighting | 3.5 | 5.0 | 5.0 | 4.0 | 17.5 |
-| 7 | X-F006 | Deep hierarchy and “deep manufacturing” are parent-driven, not general | 4.5 | 5.0 | 4.0 | 4.0 | 17.5 |
-| 8 | X-F003 | Normalized entities recur across parent buckets and within multiple paths | 4.0 | 5.0 | 5.0 | 3.5 | 17.5 |
-| 9 | X-F010 | Zero mapping stakes cannot safely be interpreted as zero ownership | 4.5 | 4.5 | 5.0 | 3.0 | 17.0 |
-| 10 | X-F011 | Financial readiness is sparse and strongly selected by parent/panel length | 4.0 | 5.0 | 5.0 | 3.0 | 17.0 |
-| 11 | X-F012 | “Ready” balance sheets still require sign, unit, and P&L gates | 4.5 | 5.0 | 4.0 | 3.0 | 16.5 |
-| 12 | X-F013 | No robust financial-depth association survives basic controls | 3.5 | 4.5 | 4.5 | 4.0 | 16.5 |
-| 13 | X-F014 | US concentration is real but denominator- and parent-sensitive | 3.5 | 4.0 | 4.5 | 4.0 | 16.0 |
-| 14 | X-F015 | The nominal foreign-entity sample contains domestic and non-country labels | 4.0 | 5.0 | 3.5 | 2.5 | 15.0 |
-| 15 | X-F016 | Temporal coverage cannot support an unqualified time-series narrative | 3.0 | 5.0 | 4.0 | 3.0 | 15.0 |
-| 16 | X-F002 | UIN is a project/exposure identifier here, not an entity identifier | 4.0 | 5.0 | 4.0 | 2.0 | 15.0 |
-| 17 | X-F017 | Repeated parsed balance-sheet signatures require source-level review | 4.0 | 3.5 | 4.0 | 3.0 | 14.5 |
+| 4 | X-F018 | Geographically broad groups can depend on one dominant UIN channel | 4.5 | 4.5 | 5.0 | 4.5 | 18.5 |
+| 5 | X-F004 | Reported depth and reconstructable graph distance diverge materially | 5.0 | 5.0 | 4.5 | 4.0 | 18.5 |
+| 6 | X-F009 | A small set of high-outdegree hubs organizes much of the network | 5.0 | 4.5 | 4.5 | 4.5 | 18.5 |
+| 7 | X-F019 | The pooled depth–ownership gradient is mostly parent composition | 4.5 | 5.0 | 5.0 | 3.5 | 18.0 |
+| 8 | X-F008 | A majority of nonroot edges are cross-border under robust weighting | 3.5 | 5.0 | 5.0 | 4.0 | 17.5 |
+| 9 | X-F006 | Deep hierarchy and “deep manufacturing” are parent-driven, not general | 4.5 | 5.0 | 4.0 | 4.0 | 17.5 |
+| 10 | X-F003 | Normalized entities recur across parent buckets and within multiple paths | 4.0 | 5.0 | 5.0 | 3.5 | 17.5 |
+| 11 | X-F010 | Zero mapping stakes cannot safely be interpreted as zero ownership | 4.5 | 4.5 | 5.0 | 3.0 | 17.0 |
+| 12 | X-F011 | Financial readiness is sparse and strongly selected by parent/panel length | 4.0 | 5.0 | 5.0 | 3.0 | 17.0 |
+| 13 | X-F012 | “Ready” balance sheets still require sign, unit, and P&L gates | 4.5 | 5.0 | 4.0 | 3.0 | 16.5 |
+| 14 | X-F013 | No robust financial-depth association survives basic controls | 3.5 | 4.5 | 4.5 | 4.0 | 16.5 |
+| 15 | X-F014 | US concentration is real but denominator- and parent-sensitive | 3.5 | 4.0 | 4.5 | 4.0 | 16.0 |
+| 16 | X-F015 | The nominal foreign-entity sample contains domestic and non-country labels | 4.0 | 5.0 | 3.5 | 2.5 | 15.0 |
+| 17 | X-F016 | Temporal coverage cannot support an unqualified time-series narrative | 3.0 | 5.0 | 4.0 | 3.0 | 15.0 |
+| 18 | X-F002 | UIN is a project/exposure identifier here, not an entity identifier | 4.0 | 5.0 | 4.0 | 2.0 | 15.0 |
+| 19 | X-F017 | Repeated parsed balance-sheet signatures require source-level review | 4.0 | 3.5 | 4.0 | 3.0 | 14.5 |
 
 ## X-F001 — Raw rows radically misweight parent and jurisdiction exposure
 
@@ -604,6 +606,95 @@ legitimate equal balance, or extraction error before econometric use.
 
 **Relevant outputs.** `duplicate_financial_signatures.csv` and evidence-bearing
 input fields.
+
+## X-F018 — Geographically broad groups can depend on one UIN channel
+
+**Result.** For each ultimate parent, take the UIN carried by the largest number
+of target occurrences. These 28 largest-UIN cells contain 1,095/1,834 targets
+(59.71%). The equal-parent mean is 62.05%, the median-parent share is 61.16%,
+and the pooled leave-one-parent-out range is 57.18–62.75%.
+
+The contrast is stronger among geographically broad groups. For the 14 parents
+with targets in at least 20 jurisdictions, the equal-parent largest-UIN share is
+71.23%. Jindal has 108/108 targets in one UIN while spanning 24 jurisdictions;
+UPL has 79/81 across 39; Hindalco 77/81 across 25; Biocon Biologics 22/23 across
+20; and Glenmark 31/38 across 28.
+
+**Unit / numerator / denominator.** Primary numerator = targets carrying the
+within-parent modal UIN, summed over parents; denominator = all 1,834 target
+occurrences. One row per parent defines the equal-parent estimand.
+
+**Why interesting.** Country diversification and registration-channel
+diversification are separate dimensions. A group can appear highly global by
+destination while most mapped entities inherit one outward-investment channel.
+
+**Robustness.** Parent-scoped and global unique-entity versions are 59.62% and
+59.85%. A different complete-path estimator—the first observed foreign node—
+gives 61.17% pooled and 61.22% parent-equal over 1,687 paths.
+
+**Hierarchy qualification.** Motherson's largest UIN share is 44.66%, while
+cross-UIN graph linkage puts 64.40% of complete paths behind one Dutch root. Dr
+Reddy's modal UIN has no observed level-0 target, so its 90.24% UIN share cannot
+be interpreted as an observed legal vehicle. UIN concentration is the robust
+claim; group-specific gateway identity needs a complete graph.
+
+**Mundane explanation.** One acquisition can bring a multi-country target group
+under a single UIN, and the mapping may mechanically propagate that UIN to all
+descendants. This does not show that current funds or legal control traverse one
+company.
+
+**Falsification test.** Validate UIN inheritance against the original ODI
+register and dated acquisition structures; separate current legal ownership
+from the mapping's exposure attribution.
+
+**Relevant outputs.** `review/tables/gateway_dependency_by_parent.csv`,
+`review/tables/gateway_dependency_sensitivity.csv`, and
+`review/figures/gateway_dependency_landscape.png`.
+
+## X-F019 — The pooled depth–ownership gradient is parent composition
+
+**Result.** Among 1,244 nonroot edges with a positive recorded stake, 56.37% of
+reported-level-1 edges are at least 99.5% owned, versus 82.78% at level 2+: an
+entity-weighted difference of 26.41 percentage points. Equal-parent rates are
+73.60% and 75.93%, only 2.33 points apart. The paired within-parent difference
+across 25 groups is 4.44 points and its median is zero.
+
+Reliance is decisive. Excluding it reduces the pooled gap to 6.10 points and
+the equal-parent gap to 0.03 points. Excluding child edges of the two
+Breakthrough Energy vehicles gives 12.59 points; excluding UINs whose third
+character is P gives 18.99 points. The third character is not assigned a legal
+meaning without external validation.
+
+**Unit / numerator / denominator.** Nonroot structural target/edge with
+`stake > 0`. “Fully owned” means recorded mapping stake at least 99.5%. Reported
+level 1 is compared with reported level 2+.
+
+**Why interesting.** A seemingly strong structural regularity becomes a
+portfolio-composition result once ultimate-parent groups receive comparable
+weight.
+
+**Robustness.** Parent-scoped/global de-duplication changes the rates by less
+than one point. On complete paths, reconstructed graph depth yields a 26.14
+point entity-weighted gap but only 3.23 points in the paired parent comparison.
+Hierarchy correction therefore does not rescue the pooled interpretation.
+
+**Missing-data bounds.** The other 406 nonroot stakes are recorded as zero and
+treated as unknown. If every zero were non-full, level-1/level-2+ full-ownership
+rates would be 37.48%/69.00%; if every zero were full, they would be
+70.99%/85.65%. The pooled ordering survives extreme assumptions, while the
+across-parent generalization does not.
+
+**Mundane explanation.** Reliance's shallow US layer contains venture-fund
+portfolio exposures and minority positions. Other groups' deeper layers often
+contain consolidated entities inherited through acquisitions.
+
+**Falsification test.** Recover contemporaneous legal stakes, classify control,
+joint control, associates, and fund look-through holdings, then estimate
+within-parent and within-acquisition differences.
+
+**Relevant outputs.** `review/tables/stake_depth_sensitivity.csv`,
+`review/tables/stake_zero_bounds.csv`, `review/tables/stake_depth_by_parent.csv`,
+and `review/figures/ownership_stake_depth_sensitivity.png`.
 
 ## Cross-cutting interpretation
 

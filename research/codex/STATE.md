@@ -2,9 +2,19 @@
 
 ## Status
 
-Blind discovery is complete for the supplied subsidiary financial dataset as of
-2026-08-26. No Claude branch, output, note, or finding was inspected. No commit,
-push, merge, rebase, reset, or history rewrite was performed.
+Blind discovery and the first authorized cross-agent review increment are
+complete as of 2026-08-26. No commit, push, merge, cherry-pick, checkout,
+rebase, reset, or history rewrite was performed.
+
+The previous state recorded no cross-agent review. The common fork was
+`29109a3384ba0f3471a2b677f04295a51d8aadaa`. Git history showed one new commit
+on `origin/agent/claude`, which was reviewed in this increment:
+
+- `5ab6cb5944ad6fe8193f03b71f7a918ac4d24076`
+
+The review is in `research/reviews/CLAUDE_5ab6cb5_REVIEW.md`. The replication
+script reads no Claude-generated file and reconstructs every reviewed statistic
+from the research input and the independently built Codex hierarchy.
 
 ## Inputs
 
@@ -31,9 +41,13 @@ Both inputs were treated as immutable and read-only.
   transitions, recurring motifs, intermediary use, and parent heterogeneity.
 - Ran raw-row versus entity, parent-balanced, leave-one-parent-out, reported-
   versus-reconstructed depth, financial-sample, and sector-composition checks.
-- Created 17 ranked candidate findings/directions and a follow-up research
-  agenda.
-- Generated seven inspected visualizations and extensive reusable CSV tables.
+- Created 17 blind-discovery findings plus two independently developed
+  post-review findings and a follow-up research agenda.
+- Inspected and classified seven claims/subclaims from the one new Claude
+  commit; reproduced them with unique-entity, path, parent-weighted,
+  leave-one-parent-out, missingness, and hierarchy-mechanics checks.
+- Generated seven blind-discovery and two post-review inspected visualizations,
+  plus extensive reusable CSV tables.
 
 ## Stable headline counts
 
@@ -51,6 +65,35 @@ Both inputs were treated as immutable and read-only.
 - ready target-year balance sheets: 560/3,567 (15.70%)
 - basic sign-plausible ready rows: 521
 - P&L-valid rows: 105
+
+## Cross-agent review results
+
+- **CONFIRMED:** C-F002 gateway amplification; C-F017 reported-level/graph-
+  distance mismatch concentrated in Motherson.
+- **PARTIALLY CONFIRMED:** C-F001 UIN multiplier as written; C-F003 fixed-list
+  conduit exposure; C-F014 group-versus-depth financial coverage.
+- **INTERESTING BUT NEEDS EXTERNAL VALIDATION:** C-F008 gateway vintage shift;
+  C-F009 semantic decoding of UIN substrings.
+
+Key replicated/corrected quantities:
+
+- Dutch level-0 gateways have 34.85 descendants on average (median 12.0),
+  equal-parent mean 37.08, and leave-one-parent-out minimum 21.25. The
+  no-majority-child-branch restriction gives mean 37.75.
+- Fixed-list upstream-centre exposure is 1,134/1,834 (61.83%), 57.17% under
+  equal-parent weighting, and 57.77–67.89% leave-one-parent-out. Counting each
+  upstream node once gives 37.97%, exposing the descendant-weighting mechanic.
+- All 78 edges to an unscraped immediate parent retain a reported parent
+  country. Preserving it moves Dr Reddy's fixed-list exposure to 37/41 (90.24%);
+  treating these countries as unknown caused the other branch's 7.3% result.
+- Mauritius supplies 11/55 pre-2011 observed gateways versus 4/99 from 2016
+  onward (two-sided Fisher p = 0.0030; LOO change -19.37 to -13.44 pp). The UIN
+  substring's interpretation as registration year still needs external proof.
+- Financial readiness is 265/1,834 (14.45%). The proper parent fixed-effect
+  depth coefficient is -2.42 pp, with leave-one-parent-out range -6.62 to -0.77
+  pp, rather than the reviewed analysis's -0.9 pp conditional demeaned mean.
+- Complete-path depth mismatch is 236/1,687 (13.99%); Motherson contributes
+  208/236 (88.14%).
 
 ## Strongest research conclusions
 
@@ -70,6 +113,12 @@ Both inputs were treated as immutable and read-only.
    positive AOC-1 shareholding where both measures exist.
 7. Financial coverage and quality are too selected for broad population claims;
    no robust financial-depth association was found.
+8. The largest UIN within each parent carries 59.71% of all targets (62.05%
+   equal-parent; 57.18–62.75% LOO). Among 14 groups in at least 20 destination
+   jurisdictions, the equal-parent share is 71.23%.
+9. A 26.41 pp pooled level-1 versus level-2+ full-ownership gradient shrinks to
+   2.33 pp with equal-parent weighting and 6.10 pp after excluding Reliance; it
+   is principally group/portfolio composition.
 
 See `FINDINGS.md` for full numerators, denominators, robustness, mundane/data-
 quality explanations, falsification tests, and rankings.
@@ -77,12 +126,16 @@ quality explanations, falsification tests, and rankings.
 ## Code and outputs
 
 - Main pipeline: `src/codex/research_pipeline.py`
+- Cross-agent replication and independent extension:
+  `src/codex/review_increment.py`
 - Validation: `src/codex/validate_outputs.py`
 - Usage: `src/codex/README.md`
 - Data audit: `research/codex/DATA_AUDIT.md`
 - Findings: `research/codex/FINDINGS.md`
 - Research ideas: `research/codex/IDEAS.md`
+- Cross-agent review: `research/reviews/CLAUDE_5ab6cb5_REVIEW.md`
 - Generated data/tables/figures: `outputs/codex/`
+- Review outputs and hash manifest: `outputs/codex/review/`
 - Input/software manifest: `outputs/codex/manifest.json`
 - Machine-readable headline metrics: `outputs/codex/key_metrics.json`
 
@@ -92,9 +145,11 @@ Executed from repository root:
 
 ```bash
 python src/codex/research_pipeline.py
+python src/codex/review_increment.py
 python src/codex/validate_outputs.py --rebuild
 ruff check src/codex
-python -m py_compile src/codex/research_pipeline.py src/codex/validate_outputs.py
+python -m py_compile src/codex/research_pipeline.py \
+  src/codex/review_increment.py src/codex/validate_outputs.py
 ```
 
 Validation result:
@@ -104,16 +159,19 @@ Validation result:
 - one edge occurrence and one path record per target validated;
 - no graph cycles detected;
 - 3,567 preferred target-year keys are unique;
-- seven PNG figures pass size/integrity checks;
-- all 68 generated CSV/`key_metrics.json` files are byte-identical after an
-  isolated temporary rebuild;
+- seven main and two review PNG figures pass size/integrity checks;
+- 18 review tables and their reviewed-commit provenance validate;
+- all 88 generated CSV/JSON files are byte-identical after an isolated
+  temporary rebuild, including the review manifest's figure hashes;
 - Ruff and Python compilation pass.
 
 ## Known limitations / next boundary
 
 - There is no authoritative legal-entity identifier; normalized name-country
   keys are candidates.
-- Seventy-eight immediate parents are absent, truncating 147 descendant paths.
+- Seventy-eight immediate-parent edges refer to 18 normalized entities absent
+  from the target table, truncating 147 descendant paths. Their reported
+  countries are present and must not be discarded.
 - Reported levels may count omitted nodes; observed graph distance is a lower
   bound.
 - Stake zero is semantically unreliable and no cumulative-control measure is
@@ -122,7 +180,9 @@ Validation result:
   unsafe.
 - Financial selection is severe and parent-dependent.
 - Static hierarchy attributes cannot measure ownership restructuring over time.
+- The UIN's fixed string format is internally clear, but substring meanings and
+  the gateway-vintage interpretation need an external RBI specification.
 
-The next highest-value increment is external/source validation of missing
-parents, duplicate legal entities, and ownership stakes before stronger
-econometric interpretation.
+The next highest-value increment is external/source validation of the UIN
+format, missing parent identities, dated acquisitions, duplicate legal entities,
+and ownership stakes before stronger econometric interpretation.

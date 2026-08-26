@@ -10,6 +10,9 @@ interpretation is in `research/codex/DATA_AUDIT.md` and
 - `tables/` contains audits, descriptive results, denominator comparisons,
   parent-weighting and leave-one-parent-out checks, and manual-review lists.
 - `figures/` contains publication-oriented exploratory visualizations.
+- `review/` contains independent cross-agent replications, sensitivity tables,
+  two post-blind-discovery analyses, and its own hash manifest. It is generated
+  without reading the other agent's outputs.
 - `manifest.json` records input hashes, software versions, variable labels, and
   headline counts.
 - `key_metrics.json` is a compact machine-readable summary.
@@ -18,6 +21,7 @@ Rebuild and validate from the repository root:
 
 ```bash
 python src/codex/research_pipeline.py
+python src/codex/review_increment.py
 python src/codex/validate_outputs.py --rebuild
 ```
 
