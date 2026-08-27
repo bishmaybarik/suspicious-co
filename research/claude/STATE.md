@@ -1,8 +1,8 @@
 # Claude research state
 
-**Phase:** cross-agent review and continued independent exploration.
-**Increment:** 2 — complete.
-**Last updated:** 2026-08-26.
+**Phase:** final cross-review and adjudication — complete.
+**Increment:** 3 — complete.
+**Last updated:** 2026-08-27.
 
 ---
 
@@ -10,119 +10,153 @@
 
 | Branch | Commit SHA | Subject | Reviewed |
 |---|---|---|---|
-| `origin/agent/codex` | `bb67b9331f54eb7b9bfe9070c962f5664337c777` | `research(codex): reconstruct ownership networks and audit blind-discovery patterns` | 2026-08-26, this increment |
+| `origin/agent/codex` | `bb67b9331f54eb7b9bfe9070c962f5664337c777` | `research(codex): reconstruct ownership networks and audit blind-discovery patterns` | increment 2 |
+| `origin/agent/codex` | **`722a0c04312b13f351ea0c1faaed867c2cccc681`** | `research(codex): replicate claims and audit gateway concentration` | **increment 3, this increment** |
 
-This is the only commit on `origin/agent/codex` ahead of `main`
-(`29109a3`). It is the first Codex commit I have inspected; nothing on that
-branch was read during increment 1. No Codex code was executed, imported or
-copied — only the numeric claims in `research/codex/FINDINGS.md` were used as
-reproduction targets, and every statistic was recomputed from the immutable
-input through my own pipeline.
+`722a0c0` is the head of `origin/agent/codex`. It contains Codex's review of my
+commit `5ab6cb5` (`research/reviews/CLAUDE_5ab6cb5_REVIEW.md`), two new findings
+(X-F018, X-F019) and `src/codex/review_increment.py`. Inspection was read-only:
+`git fetch`, `git log`, `git ls-tree`, `git show`. No merge, cherry-pick,
+rebase, checkout, reset or modification of that branch. No Codex code was
+executed, imported or copied; every "recheck" number was recomputed from the
+immutable input through my own pipeline.
 
 ## What this increment did
 
-1. **Reviewed eight Codex findings.** Reproduced each from the raw input and
-   classified it. Written to `research/reviews/` with a machine-readable
-   ledger at `outputs/claude/tables/review_codex_reproduction_ledger.md`.
-2. **Corrected one of my own rules** as a result of the review (see below).
-3. **Opened five new lines of enquiry** that neither branch had investigated,
-   recorded as C-F018 to C-F022 in `FINDINGS.md`.
-4. Added four figures and 18 tables; the whole pipeline still rebuilds with
-   one command.
+Produced `research/claude/FINAL_ADJUDICATION.md` — the joint shortlist, the
+resolution of every Claude–Codex disagreement, the classification of all
+findings, and the proposed final study design.
 
-## Review verdicts
+New code: `src/claude/12_adjudicate.py`, `13_adjudicate_two.py`,
+`14_adjudicate_three.py`, `15_adjudicate_four.py`.
+New tables: 11 `outputs/claude/tables/adj_*` tables.
 
-| Codex finding | Verdict | Note |
+## The correction that reshaped the round
+
+Codex found that my hierarchy builder replaced the reported
+`immediate_parent_country` of a named-but-unscraped intermediary with
+`(UNOBSERVED)`, discarding supplied data. **Verified and adopted.** There are
+20 such intermediaries carrying 81 child edges, and all 20 have a reported
+non-India country.
+
+| Statistic | discarded (increment 1) | preserved (corrected) |
 |---|---|---|
-| X-F001 raw rows misweight parent exposure | CONFIRMED | reproduces exactly; Tata Communications is 1st by rows and 11th by entities |
-| X-F006 deep hierarchy is parent-driven | CONFIRMED | every number exact; disciplines my C-F004 |
-| X-F007 Netherlands and Mauritius as intermediaries | CONFIRMED | survives the unique-node and leaf-only tests Codex proposed but did not run |
-| X-F008 most non-root edges cross jurisdictions | CONFIRMED | 948/1,650 vs 951/1,650; I adopted Codex's exclusion of level-0 edges |
-| X-F010 zero stakes are not literal zero | CONFIRMED | 7/7 contradicted by AOC-1; forced a correction to my own filter |
-| X-F012 ready rows need extra gates | CONFIRMED | reproduces to the row |
-| X-F014 US concentration is denominator-sensitive | PARTIALLY CONFIRMED | motif share is 49–61% depending on path definition |
-| X-F017 repeated balance-sheet signatures | CONFIRMED, sharpened to DATA ARTIFACT | all 33 same-URL clusters have byte-identical evidence text |
+| Conduit exposure, entity-weighted | 58.8% | **61.2%** (Codex 61.8%) |
+| Conduit exposure, equal-parent | 53.5% | **57.0%** (Codex 57.2%) |
+| Dr Reddy's conduit exposure | 7.3% | **90.2%** (Codex 90.24%) |
+| Dr Reddy's largest-subtree share | 7.5% | **92.5%** |
+| Median group largest-subtree share | 43.2% | **50.8%** |
+| Greedy cover at three jurisdictions | 60.6% | **62.2%** |
 
-## Corrections to my own increment-1 work
+## Corrections to my own work, this increment
 
-1. **Minority-stake filter (C-F015).** My 10% floor deleted the 406 entities
-   whose stake is recorded as the zero *code*. Corrected rule: apply a minority
-   filter only to entities with a **strictly positive** recorded stake. The
-   minority set falls from 481 entities to **75**. Recorded in
-   `outputs/claude/tables/corrected_minority_filter.md`.
-2. **Cross-border edge share.** My increment-1 figure of 64.1% included the
-   level-0 India-to-foreign edges, which cross by construction. The correct
-   denominator is non-root edges only: **57.5%**.
-3. **Idea A4 refuted.** I predicted "partners at the top, wholly owned below".
-   The raw 15.7-point gradient is 2.0 points within parent and vanishes
-   entirely once Reliance is excluded. Recorded as part of C-F021.
-4. **Negative equity by jurisdiction downgraded.** My increment-1 note that
-   Mauritius shows 53.8% negative equity (n = 13) should be read with the
-   caution Codex applies in X-F012; negative book equity is ordinary in
-   loan-funded holding companies.
+1. **"Every UIN has exactly one level-0 entity" is false.** 184 of 186; the two
+   without cover 38 entities (37 Dr Reddy's, 1 Wipro).
+2. **C-F014's within-parent depth gap of −0.9pp used the wrong estimator.**
+   The parent fixed-effect coefficient is **−2.42pp**, LOO **−6.62 to −0.77pp**
+   (min dropping Wipro, max dropping Motherson) — reproducing Codex to the
+   second decimal. "Group, not depth" is withdrawn; the association is
+   attenuated, not eliminated.
+3. **C-F020's within-cell gap of 23.3pp used the same wrong estimator.** The
+   proper within coefficient is **36.5pp** and the mean paired within-cell
+   difference is 36.7pp (median 44.9pp) across the 68 cells with variation in
+   the flag. The finding is stronger than I reported.
+4. **Hub concentration denominator.** 34 hubs carry 741 of the 1,569
+   entity-origin edges = **47.2%**, not 40.5% of 1,834 targets.
+5. **Value weighting is not estimable.** Units are blank for 516 of 560 ready
+   rows across 9 currencies. Every structural statistic in this project is
+   necessarily entity-weighted.
 
-## New findings this increment
+## Final classification
 
-| Code | Claim | Robustness |
-|---|---|---|
-| C-F018 | median large group routes 43% of its foreign network through one company; ten route over 60% | high; correlation with gateway count is only −0.35, so not mechanical |
-| C-F019 | Netherlands, United States and Mauritius sit above 61% of all 1,834 entities | high; equal-parent and leave-one-parent-out reported per jurisdiction |
-| C-F020 | a holding-type name predicts holding behaviour by 23pp *within* parent × country cells | high; LOO 45–49pp raw; precision 64%, recall 28% |
-| C-F021 | layering does not dilute ownership (median cumulative 100%); the depth gradient in stakes is a composition effect | medium; chain-completion selection stated on the figure |
-| C-F022 | the Netherlands and Mauritius split the world regionally as gateways | medium; strong only on multi-parent routes |
+**CORE (5).** CORE-1 the funnel (median group routes 50.8% of its network
+through one company; 11/24 above 60%; 17/24 chokepoints in a financial centre
+against a 26.5% benchmark; r = 0.87 with Codex's independent modal-UIN
+measure). CORE-2 three jurisdictions above 62% of all entities. CORE-3 gateway
+amplification by first-hop jurisdiction. CORE-4 comparable footprints, opposite
+architectures. CORE-5 the register sees the top of the structure.
 
-## Stable headline counts (unchanged)
+**SUPPORTING (5).** Conduit exposure and its 96-point cross-group spread; names
+predict network position (36.5pp within parent × country); the depth–ownership
+gradient is composition, and layering does not dilute ownership; hub
+concentration; jurisdictions sort into entry points and terminals.
 
-3,742 rows → 1,834 entities → 186 UINs → 28 parents → 122 jurisdictions,
-depth 0–12. Forest: acyclic, maximum in-degree 1, 1,854 edges.
+**DESCRIPTIVE (7).** Recurring motifs; Marshall Islands SPVs; mirrored PSU
+consortium chains; chains returning to India; the Netherlands/Mauritius
+regional split; domestic and IFSC labels inside a "foreign" file; duplicate
+entities are immaterial.
+
+**FRAGILE (5).** Gateway vintage shift (only the Mauritius decline is robust,
+and it inherits the unvalidated UIN-year assumption); holding-company financial
+signature; Jersey/Estonia/Cyprus leverage; negative equity by jurisdiction; the
+"1,500 downstream entities" count.
+
+**UNRESOLVED (5).** Which depth concept reflects legal structure; whether the
+UIN substrings mean what I inferred; the semantics of the 406 zero stakes;
+whether depth at the two extremes is a disclosure artefact; whether "financial
+centre" is the right partition.
+
+**REJECTED (9).** Listed in §4 of `FINAL_ADJUDICATION.md`.
+
+## Disagreements
+
+Resolved: the unscraped-parent country (Codex right); the coverage-depth
+estimator (Codex right); conduit magnitude and Dutch amplification (both
+defensible, report ranges); graph chokepoint versus UIN channel (complementary,
+r = 0.87, report both); hub denominator (mine right); duplicate clusters
+(immaterial). Exact agreement on cross-border edge share, modal-UIN share,
+row-versus-entity weighting and the hub set.
+
+Remaining: U-1 to U-5 above. U-1 is load-bearing for CORE-4.
+
+## Assessment
+
+The evidence supports one coherent descriptive-and-measurement paper built on
+CORE-1 and CORE-2, with CORE-5 as motivation and CORE-3 as mechanism. It does
+not support a causal, policy or tax paper, sector effects, or any financial
+result on the current 14.4%-coverage sample. Full reasoning in §11 of
+`FINAL_ADJUDICATION.md`.
+
+## Stable headline counts
+
+3,742 rows → 3,567 preferred target-years → 1,834 entities → 186 UINs →
+**184** observed level-0 roots → 28 parents → 122 jurisdictions, depth 0–12.
+Forest: acyclic, maximum in-degree 1, 1,854 edges, of which 1,650 are non-root
+and 1,569 originate from an observed entity. 20 named-but-unscraped
+intermediaries on 81 edges.
 
 ## Reproducibility
 
 ```
-python3 src/claude/make_claude.py
+python3 src/claude/make_claude.py     # 01 to 11, unchanged
+python3 src/claude/12_adjudicate.py   # run from src/claude/
+python3 src/claude/13_adjudicate_two.py
+python3 src/claude/14_adjudicate_three.py
+python3 src/claude/15_adjudicate_four.py
 ```
 
-Runs `01_audit_rows` → `02_build_hierarchy` → `03_analyse_hierarchy` →
-`04_analyse_jurisdiction` → `05_analyse_coverage_financials` →
-`06_audit_uin_structure` → `07_make_figures` → `08_review_codex` →
-`09_analyse_chokepoints` → `10_analyse_names_and_stakes` →
-`11_make_figures_increment2`. Rebuilt from clean this increment: 59 tables and
-12 figures. `src/claude/config.py` holds all paths; no script uses a relative
-path or `cd`. The input files were opened read-only and never modified.
+The four adjudication scripts read `outputs/claude/derived/entity.parquet` and
+the immutable input; they do not read any Codex file. `src/claude/config.py`
+holds all paths. The input files were opened read-only and never modified.
 
 Environment: Python 3, pandas 2.3.2, numpy 1.26.4, networkx 3.2.1,
 matplotlib 3.10.8.
 
-## Limitations carried into increment 3
+## Highest-value next work, in order
 
-1. Any pooled depth statistic in this file is a statement about two groups
-   (X-F006). Sector-by-depth claims are not estimable with 28 parents.
-2. The valuation sample is contaminated in two independent ways: 39 of 560
-   ready rows fail basic sign checks, and 70 carry a balance sheet shared with
-   another target. The usable sample is closer to 460.
-3. Chain-completion selection limits the cumulative-ownership work (C-F021).
-4. The UIN decoding (C-F009) remains an inference from three consistency
-   checks, not documented metadata.
-5. Jersey, Estonia and Cyprus appear as high-leverage jurisdictions on one to
-   five parents each; they are single-group facts until more parents are added.
-
-## Next increment — planned order
-
-1. **Duplicate-evidence filter as a deliverable.** Build the row-level flag
-   (`*_evidence` text shared with another target) and re-run every financial
-   statistic on the cleaned sample. This is the highest-value item for the
-   parent project and follows directly from my X-F017 review.
-2. **A1 largest-subtree test** on gateway amplification (C-F002), now more
-   pressing because C-F018 shows how much of each network sits in one subtree.
-3. **A8 transition matrix against an independence benchmark** with parent
-   bootstrap, to put C-F007 and C-F022 on a statistical footing.
-4. **Extend C-F020**: test whether the name signal predicts *descendant count*
-   and not merely the binary holder flag, and whether it transfers across
-   groups (train on 27 parents, test on the held-out one).
+1. External validation of the hierarchy for Motherson, Hindalco and Dr Reddy's
+   against AOC-1 or annual-report charts — the only thing that resolves U-1.
+2. Push the unscraped-intermediary country fix back into
+   `02_build_hierarchy.py` so the corrected numbers reproduce from the main run.
+3. Parent bootstrap for the CORE-1 chokepoint median (24 groups).
+4. The duplicate-evidence row flag, then re-run every financial statistic on
+   the cleaned ~460-row sample.
+5. One frozen entity key agreed by both agents (1,818 / 1,823 / 1,830 / 1,834
+   are four counts of the same thing).
 
 ## Git
 
-No commits, pushes, merges, rebases, cherry-picks, checkouts of another
-branch, or history rewrites were performed. `origin/agent/codex` was read via
-`git show` and `git log` only. The commit subject for the controller is in
-`.agent_runtime/commit_message.txt`.
+No commits, pushes, merges, rebases, cherry-picks, resets, checkouts of another
+branch, or history rewrites were performed. `origin/agent/codex` was inspected
+read-only at `722a0c04312b13f351ea0c1faaed867c2cccc681`. The commit subject for
+the controller is in `.agent_runtime/commit_message.txt`.
