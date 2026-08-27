@@ -1,0 +1,16 @@
+statistic,value
+nonroot target occurrences,1650
+paths reaching ultimate parent,1503
+root-complete paths with all positive stakes,962
+positive chains if orphan termination is accepted,1082
+root-complete positive-chain share pct,58.3030303
+median cumulative ownership pct,100
+chains at cumulative 100 pct,51.03950104
+single-edge raw deep-minus-shallow pp,15.7399735
+single-edge outcome-only demeaned gap pp,2.047076416
+single-edge proper parent FE gap pp,4.069807682
+single-edge equal-parent paired gap pp,0.663556774
+single-edge median-parent paired gap pp,0.1996508843
+cumulative raw deep-minus-shallow pp,17.53300292
+cumulative outcome-only demeaned gap pp,2.219495877
+cumulative proper parent FE gap pp,3.576846115
