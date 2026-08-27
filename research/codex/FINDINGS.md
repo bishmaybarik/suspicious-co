@@ -710,3 +710,30 @@ not financial anomalies. In particular:
 4. validate the hierarchy before interpreting reported depth; and
 5. treat current financial results as selection/audit findings until coverage,
    units, and P&L validation improve.
+
+## Final cross-review disposition
+
+The final joint shortlist and all cross-agent disagreement resolutions are in
+`FINAL_ADJUDICATION.md`, based on Claude tip
+`79b342b1ae3a473fef40a5c8dc91fa937597185e`.
+
+- **Core:** X-F001 denominator correction; X-F005 multidimensional parent
+  architectures; X-F018/C-F018 dominant channels and large subtrees;
+  X-F007/C-F002 gateway-jurisdiction topology; and X-F004/X-F006/C-F017 depth
+  measurement plus parent concentration.
+- **Supporting:** X-F008 cross-border edges; X-F010/X-F019 ownership-data and
+  composition results; X-F011–X-F013/X-F017 financial selection and extraction
+  limits; C-F020 holding-name prediction; and X-F002/X-F003 unit-definition
+  findings.
+- **Fragile or unresolved:** the fixed-list conduit share as a general gateway
+  index, cumulative no-dilution, regional gateway division, UIN decoding, and
+  gateway vintage.
+- **Rejected as general claims:** deep manufacturing, hierarchy-based financial
+  health, static restructuring trends, and institutional/tax/legal mechanisms.
+
+Final replications correct the holding-name parent-country fixed-effect gap to
+36.34 percentage points, restrict complete all-positive ownership chains to
+962, place the median largest observed subtree at 43.20% (41.72% under a
+normalized-DAG dominator sensitivity), and confirm identical evidence reuse in
+33 same-URL/different-name balance-sheet signature clusters. Reproducible
+tables are under `outputs/codex/final/`.

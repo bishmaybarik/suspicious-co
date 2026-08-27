@@ -4,6 +4,8 @@ Run from the repository root:
 
 ```bash
 python src/codex/research_pipeline.py
+python src/codex/review_increment.py
+python src/codex/final_adjudication.py
 python src/codex/validate_outputs.py --rebuild
 ```
 
@@ -53,6 +55,10 @@ sample definitions in the output tables.
 - `outputs/codex/tables/`: audits, empirical summaries, denominator checks,
   leave-one-parent-out results, and anomaly review lists.
 - `outputs/codex/figures/`: generated visualizations.
+- `outputs/codex/review/`: first cross-agent replications and post-review
+  extensions.
+- `outputs/codex/final/`: final cross-review denominator, graph, ownership,
+  name-signal, and extraction-reuse diagnostics.
 - `outputs/codex/manifest.json`: input hashes, package versions, variable labels,
   and headline metrics.
 

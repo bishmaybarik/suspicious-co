@@ -1,0 +1,25 @@
+sample,step,jurisdiction,newly_covered,cumulative_pct
+all target paths,1,NETHERLANDS,540,29.4438386
+all target paths,2,UNITED STATES OF AMERICA,341,48.03707743
+all target paths,3,MAURITIUS,259,62.15921483
+all target paths,4,UNITED KINGDOM,133,69.41112323
+all target paths,5,SINGAPORE,107,75.24536532
+all target paths,6,SWITZERLAND,75,79.33478735
+all target paths,7,CYPRUS,72,83.2606325
+all target paths,8,ISRAEL,27,84.73282443
+complete target paths,1,NETHERLANDS,518,30.70539419
+complete target paths,2,UNITED STATES OF AMERICA,299,48.4291642
+complete target paths,3,MAURITIUS,258,63.72258447
+complete target paths,4,UNITED KINGDOM,111,70.3023118
+complete target paths,5,SINGAPORE,102,76.34854772
+complete target paths,6,CYPRUS,73,80.67575578
+complete target paths,7,SWITZERLAND,38,82.92827504
+complete target paths,8,ISRAEL,27,84.52874926
+exclude Breakthrough children,1,NETHERLANDS,540,31.30434783
+exclude Breakthrough children,2,MAURITIUS,267,46.7826087
+exclude Breakthrough children,3,UNITED STATES OF AMERICA,224,59.76811594
+exclude Breakthrough children,4,UNITED KINGDOM,133,67.47826087
+exclude Breakthrough children,5,SINGAPORE,107,73.68115942
+exclude Breakthrough children,6,SWITZERLAND,75,78.02898551
+exclude Breakthrough children,7,CYPRUS,72,82.20289855
+exclude Breakthrough children,8,ISRAEL,27,83.76811594

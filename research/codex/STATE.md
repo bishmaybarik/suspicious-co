@@ -2,19 +2,23 @@
 
 ## Status
 
-Blind discovery and the first authorized cross-agent review increment are
-complete as of 2026-08-26. No commit, push, merge, cherry-pick, checkout,
-rebase, reset, or history rewrite was performed.
+Blind discovery, the first cross-agent review, and the final cross-review /
+adjudication are complete as of 2026-08-27. No commit, push, merge,
+cherry-pick, checkout, rebase, reset, or history rewrite was performed.
 
-The previous state recorded no cross-agent review. The common fork was
-`29109a3384ba0f3471a2b677f04295a51d8aadaa`. Git history showed one new commit
-on `origin/agent/claude`, which was reviewed in this increment:
+The common fork is `29109a3384ba0f3471a2b677f04295a51d8aadaa`. The first
+review covered Claude commit
+`5ab6cb5944ad6fe8193f03b71f7a918ac4d24076`. The final round inspected the
+complete current history of `origin/agent/claude` and reviewed its exact tip:
 
-- `5ab6cb5944ad6fe8193f03b71f7a918ac4d24076`
+- **`79b342b1ae3a473fef40a5c8dc91fa937597185e`** —
+  `research(review): reproduce eight Codex findings and add chokepoint, naming
+  and ownership-dilution analyses`
 
-The review is in `research/reviews/CLAUDE_5ab6cb5_REVIEW.md`. The replication
-script reads no Claude-generated file and reconstructs every reviewed statistic
-from the research input and the independently built Codex hierarchy.
+The first review is in `research/reviews/CLAUDE_5ab6cb5_REVIEW.md`; the final
+decision document is `research/codex/FINAL_ADJUDICATION.md`. Both replication
+scripts read no Claude-generated analytical file and reconstruct reviewed
+statistics from the immutable input and independently built Codex hierarchy.
 
 ## Inputs
 
@@ -46,8 +50,19 @@ Both inputs were treated as immutable and read-only.
 - Inspected and classified seven claims/subclaims from the one new Claude
   commit; reproduced them with unique-entity, path, parent-weighted,
   leave-one-parent-out, missingness, and hierarchy-mechanics checks.
+- Inspected Claude's second commit, all eight of its Codex-review documents,
+  its five new findings, their code, and their reported output tables through
+  read-only Git commands.
+- Reproduced the new subtree concentration, jurisdiction cover, name-role,
+  cumulative-stake, routing, and duplicate-evidence analyses under Codex's
+  entity and path definitions.
+- Resolved the final cross-agent disagreements and classified the joint
+  candidate set as core, supporting, descriptive, fragile, unresolved, or
+  rejected.
+- Designed the final study question, eight-result narrative, tables, figures,
+  paper structure, robustness agenda, and explicit drop list.
 - Generated seven blind-discovery and two post-review inspected visualizations,
-  plus extensive reusable CSV tables.
+  plus extensive reusable CSV tables and ten final-adjudication diagnostics.
 
 ## Stable headline counts
 
@@ -65,6 +80,10 @@ Both inputs were treated as immutable and read-only.
 - ready target-year balance sheets: 560/3,567 (15.70%)
 - basic sign-plausible ready rows: 521
 - P&L-valid rows: 105
+- complete root-reaching paths with all-positive nonroot stakes: 962/1,650
+  (58.30%)
+- repeated balance-sheet signatures: 51 clusters / 104 parsed rows
+- demonstrated same-URL, different-name evidence-reuse clusters: 33
 
 ## Cross-agent review results
 
@@ -95,6 +114,42 @@ Key replicated/corrected quantities:
 - Complete-path depth mismatch is 236/1,687 (13.99%); Motherson contributes
   208/236 (88.14%).
 
+## Final adjudication results
+
+**Core results:** denominator correction; multidimensional parent
+architectures; concentration behind dominant UIN channels/large observed
+subtrees; Dutch and Mauritian gateway topology; and the measurement- and
+parent-driven nature of pooled depth results.
+
+**Supporting results:** majority cross-border nonroot edges; zero-stake and
+ownership-composition audit; financial selection/extraction contamination;
+holding-name prediction of observed graph role; UIN/entity distinction; and
+parent-versus-global duplicate handling.
+
+Important new corrections to Claude's second increment:
+
+- Claude's 23.3 pp name-role “within parent × country” statistic residualized
+  only the outcome. The proper fixed-effect coefficient is **36.34 pp**, with
+  leave-one-parent-out range **34.76–38.33 pp**; the result is confirmed.
+- Claude's positive cumulative-ownership sample treats orphan termination as
+  path completion. Requiring recursion to the Indian parent yields **962**
+  all-positive chains rather than 1,083 (Codex reproduces 1,082 under the
+  orphan-accepting rule); “layering does not dilute ownership” is fragile.
+- Claude's target-level forest gives a median **43.20%** largest observed
+  subtree share among 24 groups with at least 15 targets. Entity normalization
+  and a DAG dominator check give **41.72%**; concentration remains core, but
+  “legal chokepoint” is too strong.
+- Preserving countries on unobserved parents gives the Netherlands/US/
+  Mauritius strictly upstream of **1,140/1,834 (62.16%)** target paths, versus
+  Claude's 60.6%. Equal-parent coverage is **46.65%**, so the cover is
+  descriptive rather than a standalone core claim.
+- Claude's evidence-reuse diagnosis is confirmed for **33/51** repeated
+  signature clusters. Twenty-four different-name repeated-ready clusters cover
+  49 ready rows; the remaining clusters are not automatically errors.
+- The broad repeated-signature/sign union flags 100/560 ready rows (460 remain
+  unflagged); the narrower demonstrated-artifact/sign union flags 79 (481
+  remain). Neither is a validated final financial sample.
+
 ## Strongest research conclusions
 
 1. Raw source rows are invalid firm counts and substantially misweight parent
@@ -119,6 +174,10 @@ Key replicated/corrected quantities:
 9. A 26.41 pp pooled level-1 versus level-2+ full-ownership gradient shrinks to
    2.33 pp with equal-parent weighting and 6.10 pp after excluding Reliance; it
    is principally group/portfolio composition.
+10. Holding-type names predict observed parenthood: 64.41% versus 17.56%, with
+    a proper parent-country fixed-effect gap of 36.34 pp.
+11. The current evidence supports a descriptive/methodological topology paper,
+    not a causal policy, tax, population-ODI, or financial-health paper.
 
 See `FINDINGS.md` for full numerators, denominators, robustness, mundane/data-
 quality explanations, falsification tests, and rankings.
@@ -134,8 +193,11 @@ quality explanations, falsification tests, and rankings.
 - Findings: `research/codex/FINDINGS.md`
 - Research ideas: `research/codex/IDEAS.md`
 - Cross-agent review: `research/reviews/CLAUDE_5ab6cb5_REVIEW.md`
+- Final cross-review: `research/codex/FINAL_ADJUDICATION.md`
+- Final adjudication replication: `src/codex/final_adjudication.py`
 - Generated data/tables/figures: `outputs/codex/`
 - Review outputs and hash manifest: `outputs/codex/review/`
+- Final adjudication diagnostics: `outputs/codex/final/`
 - Input/software manifest: `outputs/codex/manifest.json`
 - Machine-readable headline metrics: `outputs/codex/key_metrics.json`
 
@@ -146,10 +208,12 @@ Executed from repository root:
 ```bash
 python src/codex/research_pipeline.py
 python src/codex/review_increment.py
+python src/codex/final_adjudication.py
 python src/codex/validate_outputs.py --rebuild
 ruff check src/codex
 python -m py_compile src/codex/research_pipeline.py \
-  src/codex/review_increment.py src/codex/validate_outputs.py
+  src/codex/review_increment.py src/codex/final_adjudication.py \
+  src/codex/validate_outputs.py
 ```
 
 Validation result:
@@ -163,6 +227,8 @@ Validation result:
 - 18 review tables and their reviewed-commit provenance validate;
 - all 88 generated CSV/JSON files are byte-identical after an isolated
   temporary rebuild, including the review manifest's figure hashes;
+- the ten final CSV diagnostics plus adjudication JSON are byte-identical after
+  an isolated temporary rebuild;
 - Ruff and Python compilation pass.
 
 ## Known limitations / next boundary
@@ -185,4 +251,5 @@ Validation result:
 
 The next highest-value increment is external/source validation of the UIN
 format, missing parent identities, dated acquisitions, duplicate legal entities,
-and ownership stakes before stronger econometric interpretation.
+ownership stakes, combined-PDF extraction, and the 28-parent sample frame
+before stronger econometric or institutional interpretation.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate hierarchy invariants and optionally rebuild all CSVs in isolation."""
+"""Validate hierarchy invariants and optionally rebuild all outputs in isolation."""
 
 from __future__ import annotations
 
@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT = ROOT / "outputs/codex"
 PIPELINE = ROOT / "src/codex/research_pipeline.py"
 REVIEW_PIPELINE = ROOT / "src/codex/review_increment.py"
+FINAL_PIPELINE = ROOT / "src/codex/final_adjudication.py"
 
 
 def require(condition: bool, message: str) -> None:
@@ -146,6 +147,52 @@ def validate(output: Path) -> dict[str, int]:
         require(review_table_count >= 15, "expected review tables")
         require(review_figure_count >= 2, "expected review figures")
 
+    final_table_count = 0
+    final = output / "final"
+    if final.exists():
+        final_metrics = json.loads(
+            (final / "adjudication_metrics.json").read_text(encoding="utf-8")
+        )
+        require(
+            final_metrics["reviewed_claude_commit"]
+            == "79b342b1ae3a473fef40a5c8dc91fa937597185e",
+            "unexpected final reviewed Claude commit",
+        )
+        require(
+            final_metrics["target_occurrences"] == len(occurrences),
+            "final target denominator mismatch",
+        )
+        require(
+            final_metrics["parent_scoped_normalized_entities"]
+            == len(group_entities),
+            "final entity denominator mismatch",
+        )
+        name_signal = pd.read_csv(final / "name_signal_sensitivity.csv")
+        ownership = pd.read_csv(final / "ownership_chain_summary.csv").set_index(
+            "statistic"
+        )
+        classification = pd.read_csv(final / "classification_ledger.csv")
+        require(len(name_signal) == 2, "final name-signal samples missing")
+        require(
+            int(ownership.loc["root-complete paths with all positive stakes", "value"])
+            == final_metrics["complete_positive_ownership_chains"],
+            "final positive-chain count mismatch",
+        )
+        require(
+            set(classification["classification"])
+            == {
+                "CORE RESULT",
+                "SUPPORTING RESULT",
+                "INTERESTING DESCRIPTIVE FACT",
+                "FRAGILE",
+                "UNRESOLVED",
+                "REJECTED",
+            },
+            "final classification categories incomplete",
+        )
+        final_table_count = len(list(final.glob("*.csv")))
+        require(final_table_count == 10, "expected ten final adjudication tables")
+
     return {
         "targets": len(occurrences),
         "group_entities": len(group_entities),
@@ -155,6 +202,7 @@ def validate(output: Path) -> dict[str, int]:
         "figures": figure_count,
         "review_tables": review_table_count,
         "review_figures": review_figure_count,
+        "final_tables": final_table_count,
     }
 
 
@@ -184,6 +232,21 @@ def compare_rebuild(output: Path) -> int:
             stderr=subprocess.PIPE,
             text=True,
         )
+        subprocess.run(
+            [
+                sys.executable,
+                str(FINAL_PIPELINE),
+                "--codex-output",
+                str(rebuilt),
+                "--output",
+                str(rebuilt / "final"),
+            ],
+            cwd=ROOT,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
         original_files = {
             path.relative_to(output)
             for path in output.rglob("*.csv")
@@ -191,6 +254,7 @@ def compare_rebuild(output: Path) -> int:
             Path("key_metrics.json"),
             Path("review/review_metrics.json"),
             Path("review/manifest.json"),
+            Path("final/adjudication_metrics.json"),
         }
         rebuilt_files = {
             path.relative_to(rebuilt)
@@ -199,6 +263,7 @@ def compare_rebuild(output: Path) -> int:
             Path("key_metrics.json"),
             Path("review/review_metrics.json"),
             Path("review/manifest.json"),
+            Path("final/adjudication_metrics.json"),
         }
         require(original_files == rebuilt_files, "rebuild produced a different output-file set")
         mismatches = [

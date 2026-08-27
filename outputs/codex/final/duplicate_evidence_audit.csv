@@ -1,0 +1,17 @@
+statistic,value
+preferred target-year rows,3567
+parsed rows with three core balance variables,863
+repeated numeric signatures,51
+rows in repeated numeric signatures,104
+same-URL repeated signatures,49
+repeated signatures with different entity names,35
+same-URL different-name signatures,33
+same-URL different-name signatures with identical core evidence,33
+ready rows in any repeated signature,70
+sign-implausible ready rows,39
+ready rows flagged by repeated signature or sign,100
+ready rows unflagged by repeated signature and sign,460
+different-name repeated-ready signature clusters,24
+ready rows in different-name repeated-ready clusters,49
+ready rows flagged by strict artifact subset or sign,79
+ready rows unflagged by strict artifact subset and sign,481

@@ -1,0 +1,18 @@
+{
+  "complete_positive_ownership_chains": 962,
+  "duplicate_signature_clusters": 51,
+  "holding_name_parent_country_fe_pp": 36.338912912770816,
+  "holding_name_raw_gap_pp": 46.84492088008756,
+  "input_sha256": "65251cd99ff1cd1b5f3b44cab12ba68eed3935787cbc35b5541eb07e9dd30cea",
+  "large_parent_groups": 24,
+  "largest_observed_subtree_median_entity_pct": 43.20201421800948,
+  "normalized_dag_dominator_median_entity_pct": 41.71504739336493,
+  "orphan_accepting_positive_ownership_chains": 1082,
+  "parent_scoped_normalized_entities": 1830,
+  "reviewed_claude_commit": "79b342b1ae3a473fef40a5c8dc91fa937597185e",
+  "same_url_different_name_artifact_clusters": 33,
+  "target_occurrences": 1834,
+  "top_three_upstream_equal_parent_pct": 46.652450401339074,
+  "top_three_upstream_pooled_pct": 62.159214830970555,
+  "top_three_upstream_target_paths": 1140
+}

@@ -234,10 +234,17 @@ or entities. Ratio analyses assume within-row fields use consistent units and
 remain subject to evidence-line review.
 
 Fifty-one repeated balance-sheet signatures involve 104 of 863 preferred parsed
-rows. Some are cross-parent aliases/joint exposures, some are plausible equal
-shell balances, and some may be extraction reuse. They are review flags, not
-automatic deletions. Evidence-bearing anomalies are in
-`tables/financial_anomalies_for_review.csv`.
+rows. Final cross-review establishes an extraction-reuse mechanism for a
+specific majority subset: 33 clusters combine one source URL with different
+entity names, and all 33 reuse byte-identical assets, liabilities, and equity
+evidence. Twenty-four different-name clusters that repeat within the ready
+sample cover 49 ready rows. The remaining clusters can still include shared
+ventures, aliases, or legitimate equal balances and are not automatically
+errors. A broad repeated-signature/sign union flags 100/560 ready rows (460
+remain unflagged); a narrower demonstrated-artifact/sign union flags 79 (481
+remain). Neither count is a validated final financial sample. Evidence-bearing
+anomalies are in `tables/financial_anomalies_for_review.csv`; the final audit is
+in `final/duplicate_evidence_audit.csv`.
 
 ## Dates and temporal interpretation
 
