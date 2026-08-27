@@ -1,0 +1,12 @@
+statistic,numerator,denominator,value,unit
+Level-0 stakes missing,184,184,100,level-0 targets
+Nonroot recorded zero stakes,406,1650,24.60606061,nonroot edges
+Positive nonroot stakes,1244,1650,75.39393939,nonroot edges
+Rows with mapping stake and AOC share,45,3567,1.26156434,preferred target-years
+Zero mapping stake but positive AOC share,7,7,100,comparable zero-stake rows
+Stake/AOC difference above 1 pp,8,45,17.77777778,comparable rows
+Full ownership at level 1,292,518,56.37065637,positive-stake edges
+Full ownership at level 2+,601,726,82.78236915,positive-stake edges
+Pooled level-2+ minus level-1 gap,,1244,26.41171278,percentage points
+Equal-parent level-2+ minus level-1 gap,,27,2.328922151,percentage points
+Gap excluding Reliance,,1081,6.097326705,percentage points

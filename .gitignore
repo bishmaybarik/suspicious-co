@@ -33,6 +33,11 @@ __pycache__/
 !outputs/codex/final/*.csv
 !outputs/codex/final/*.json
 
+# Canonical paper outputs are versioned even when their machine-readable
+# formats are ignored elsewhere in the exploratory tree.
+!outputs/final/
+!outputs/final/**
+
 # Canonical/private research data
 01_data/subsidiary_financial_variables_refined.dta
 _tmp/subsidiary_financial_variables_refined_data_dictionary.txt
@@ -53,3 +58,5 @@ paper/*.toc
 paper/*.fls
 paper/*.fdb_latexmk
 paper/*.synctex.gz
+paper/*.lof
+paper/*.lot

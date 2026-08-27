@@ -1,0 +1,21 @@
+stage,count,unit,use_or_caution
+Raw source rows,3742,source candidate,No
+Preferred target-year rows,3567,target_id × fiscal_year,No
+Structural target occurrences,1834,target_id,Primary exposure/path unit
+Parent-scoped normalized entity candidates,1830,parent × normalized name-country,Primary group-architecture unit
+Global normalized entity candidates,1818,normalized name-country,Cross-parent unique-company sensitivity
+UINs,186,uin,Registration/mapping unit
+Observed level-0 targets,184,target occurrence,Observed first foreign hop
+Ultimate-parent buckets,28,source parent label,Equal-parent/LOO unit
+Nonroot edge occurrences,1650,reported child-parent relation,Level-0 edges excluded
+Expected-prior-level observed links,1500,nonroot edge,Observed parent at level minus one
+Edges to named but unscraped parents,78,nonroot edge,Country retained; identity unresolved
+Normalized missing-parent names,18,unresolved node,Conservative name-country key
+Complete observed paths,1687,target path,Reaches Indian parent through observed entities
+Targets with any located source,847,target occurrence,Financial coverage gate
+Targets with parsed balance sheet,444,target occurrence,Financial coverage gate
+Targets valuation-ready at least once,265,target occurrence,Selected financial subset
+Ready target-year rows,560,preferred target-year,Upstream ready flag
+Sign-plausible ready rows,521,preferred target-year,Assets > 0; liabilities ≥ 0
+P&L-valid rows,105,preferred target-year,Sign-plausible and P&L identity valid
+Ready rows unflagged by broad duplicate/sign screen,460,preferred target-year,Not a validated final financial sample

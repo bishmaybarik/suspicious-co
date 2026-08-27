@@ -1,0 +1,16 @@
+statistic,numerator,denominator,value,unit
+Preferred target-year rows,3567,3567,100,preferred target-years
+Ready rows,560,3567,15.69946734,preferred target-years
+Sign-plausible ready rows,521,560,93.03571429,ready rows
+P&L-valid rows,105,560,18.75,ready rows
+Ready rows with blank units,516,560,92.14285714,ready rows
+Targets with any source,847,1834,46.18320611,targets
+Targets with parsed balance sheet,444,1834,24.20937841,targets
+Targets ready at least once,265,1834,14.44929117,targets
+Repeated numeric signatures,51,863,12.05098494,signature clusters; percent is rows involved
+Demonstrated same-URL/different-name reuse clusters,33,51,64.70588235,repeated-signature clusters
+Ready rows unflagged by broad duplicate/sign screen,460,560,82.14285714,not a validated final sample
+Raw ready depth gap,,1834,-6.649533854,percentage points
+Parent fixed-effect ready depth gap,,1834,-2.417826681,percentage points
+Parent-FE LOO minimum,,1834,-6.620356454,percentage points
+Parent-FE LOO maximum,,1834,-0.7712212971,percentage points

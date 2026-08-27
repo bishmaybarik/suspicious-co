@@ -1,0 +1,129 @@
+\section{Exact estimands and counting rules}
+\label{app:estimands}
+
+\subsection{Units}
+
+The pipeline distinguishes the following units throughout:
+
+\begin{itemize}
+  \item a source candidate row for source and extraction audits;
+  \item a preferred target-year for financial readiness and accounting checks;
+  \item a target occurrence for reported path exposure;
+  \item a parent-scoped normalized entity for within-group architecture;
+  \item a global normalized entity for cross-parent unique-company sensitivity;
+  \item a nonroot occurrence edge for direct child--parent geography;
+  \item a logical entity edge for graph topology;
+  \item a complete observed target path for reconstructed distance;
+  \item an observed level-0 gateway for descendant amplification; and
+  \item an ultimate-parent bucket for equal-parent and omission checks.
+\end{itemize}
+
+No table silently substitutes raw rows for entities or target paths for unique
+intermediaries. Percentages in generated tables always travel with a stated
+numerator, denominator, or unit.
+
+\subsection{Missing values and duplicates}
+
+Blank country or name fields are never imputed through fuzzy similarity.
+Named missing parents are kept as unresolved name--country nodes. Recorded
+zero stakes are treated as unknown for control analyses. Structural fields are
+required to be invariant within target identifier. Financial duplicates are
+screened using exact signatures over fiscal year, currency, units, assets,
+liabilities, and equity; demonstrated evidence reuse additionally requires a
+shared source URL, different entity names, and identical core evidence text.
+
+\subsection{Subtree and path denominators}
+
+For parent $p$ with normalized entity set $V_p$ and candidate observed node
+$v$, the observed-subtree share is
+
+\[
+  S_{pv}=\frac{|\operatorname{Desc}(v)\cap V_p|}{|V_p|-1}.
+\]
+
+The reported parent statistic is the maximum $S_{pv}$ over observed parent
+nodes. The named-node-inclusive variant expands the candidate set to unresolved
+named parents. The strict dominator variant removes $v$ and counts only entity
+nodes that cease to be reachable from the ultimate root; alternate graph paths
+therefore reduce its value.
+
+For an upstream-jurisdiction result, each terminal target contributes at most
+one indicator per jurisdiction, regardless of how often that jurisdiction
+appears on its path. A shared ancestor still appears once for every terminal
+target below it, which is why target-path exposure is reported separately from
+unique intermediary-node prevalence.
+
+\section{Depth audit}
+\label{app:depth}
+
+\begin{table}[H]
+\centering
+\caption{Reported depth, reconstructed distance, and parent concentration}
+\scriptsize
+\resizebox{\textwidth}{!}{\input{outputs/final/tables/paper_A1_depth_audit.tex}}
+\begin{minipage}{0.98\textwidth}
+\footnotesize\vspace{0.4em}
+\textit{Notes:} Reported measures use all structural targets. Reconstructed
+distance and the mismatch rate use only complete observed paths. The
+equal-parent deep rate averages the parent-specific reported level-5+ shares.
+\end{minipage}
+\end{table}
+
+\section{Ownership-field audit}
+\label{app:ownership}
+
+\begin{table}[H]
+\centering
+\caption{Stake coverage and ownership-depth diagnostics}
+\scriptsize
+\resizebox{\textwidth}{!}{\input{outputs/final/tables/paper_A2_ownership_audit.tex}}
+\begin{minipage}{0.98\textwidth}
+\footnotesize\vspace{0.4em}
+\textit{Notes:} Full ownership is defined as a recorded positive stake of at
+least 99.5 percent. Level-0 stakes are missing and nonroot zeros are not imputed.
+The equal-parent gap averages parent-specific rates; groups without both depth
+cells do not identify a paired contrast.
+\end{minipage}
+\end{table}
+
+\section{Evidence disposition}
+\label{app:evidence}
+
+\begin{landscape}
+\begin{table}[H]
+\centering
+\caption{Canonical classification of discovered and reviewed findings}
+\scriptsize
+\input{outputs/final/tables/paper_A3_evidence_classification.tex}
+\begin{minipage}{0.94\linewidth}
+\footnotesize\vspace{0.4em}
+\textit{Notes:} ``Core'' requires agreement across the independent research
+streams plus robustness to the relevant denominator, parent-weighting, and
+hierarchy checks. Supporting results are defensible but not the paper's main
+claim. Fragile, unresolved, and rejected claims are excluded from the core
+narrative.
+\end{minipage}
+\end{table}
+\end{landscape}
+
+\section{Reproducibility}
+\label{app:reproducibility}
+
+From the repository root, the complete analysis and verification run with:
+
+\begin{verbatim}
+python -m src.analysis.run_pipeline --clean
+python -m src.analysis.validate
+pdflatex -interaction=nonstopmode -halt-on-error \
+  -output-directory=paper paper/main.tex
+pdflatex -interaction=nonstopmode -halt-on-error \
+  -output-directory=paper paper/main.tex
+\end{verbatim}
+
+The analysis command checks immutable input hashes and exact central
+invariants before writing any reported output. The validator rebuilds into a
+temporary directory and byte-compares deterministic tables, PNG figures,
+metrics, and generated research reports. Figure PDFs and the compiled paper
+may contain run-time PDF metadata; their content is checked by compilation and
+visual inspection rather than byte equality. Full definitions and the output
+map appear in \texttt{REPLICATION.md}.

@@ -1,0 +1,828 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{threeparttable}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{pdflscape}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{outputs/final/figures/}}
+\input{outputs/final/tables/numbers.tex}
+
+\definecolor{paperblue}{HTML}{356A9A}
+\hypersetup{
+  pdftitle={Mapping the First Hop},
+  pdfauthor={Canonical research synthesis},
+  colorlinks=true,
+  linkcolor=paperblue,
+  urlcolor=paperblue
+}
+\captionsetup{font=small,labelfont=bf}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+
+\newcommand{\pct}{\%}
+\xspaceaddexceptions{\pct}
+\newcommand{\pp}{percentage points}
+\newcommand{\sample}{the supplied \Parents-parent dataset}
+\newcommand{\FloatBarrier}{\clearpage}
+
+\title{\textbf{Mapping the First Hop: Denominators, Hierarchy, and Gateway
+Structure in Reported Indian Foreign Ownership Networks}}
+\author{Canonical research synthesis}
+\date{August 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This paper reconstructs the reported foreign ownership networks of \Parents
+Indian parent buckets in a supplied research dataset. The source is not a firm
+cross-section: \RawRows\ candidate source rows reduce to \PreferredRows
+preferred target-years, \Targets\ structural target occurrences,
+\ParentEntities\ parent-scoped normalized entity candidates, and
+\GlobalEntities\ global normalized candidates. Keeping these denominators
+separate changes both rankings and interpretation. The modal registration or
+mapping channel contains \ModalUinPct\pct\ of targets in the pooled data and
+\ModalUinEqualPct\pct\ under equal-parent weighting. Among
+\ConcentrationParents\ sufficiently large parent groups, the median largest
+observed subtree contains \ObservedSubtreeMedian\pct\ of normalized entities;
+the corresponding strict directed-acyclic-graph dominator estimate is
+\DagDominatorMedian\pct. First-hop gateways in the Netherlands have a mean of
+\DutchGatewayMean\ downstream entities, compared with a parent-equal mean of
+\DutchGatewayEqualMean, and a leave-one-parent-out range of
+\DutchGatewayLooLow--\DutchGatewayLooHigh. Direct relations are also commonly
+international: \CrossBorderEdges/\NonrootEdges\ nonroot edges
+(\CrossBorderPct\pct) cross a jurisdiction boundary, with an equal-parent
+estimate of \CrossBorderEqualPct\pct. These findings survive entity
+de-duplication, parent balancing, leave-one-parent-out checks, and alternative
+network definitions. Other apparent patterns do not. Reported level and
+reconstructed graph distance disagree for \DepthMismatchCount/\CompletePaths
+complete paths, and pooled depth, ownership, sector, and financial patterns are
+strongly affected by parent composition or measurement limitations. The paper
+therefore establishes a descriptive topology for this dataset, not causal,
+legal, tax, regulatory, or misconduct conclusions.
+\end{abstract}
+
+\noindent\textbf{Keywords:} ownership networks; corporate hierarchy;
+subsidiary geography; entity resolution; robustness; denominator audit
+
+\vspace{0.8em}
+\noindent\textbf{Scope note.} This first canonical version deliberately uses
+only evidence validated inside the supplied data and code. It does not add an
+external literature review or institutional interpretation, because those
+sources were not part of the adjudicated evidence base. Such context is a task
+for a separately sourced revision.
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+Datasets on international corporate structure often combine objects that look
+deceptively interchangeable. These include source records, reporting years,
+registered investments, named subsidiaries, parent relations, and complete
+ownership paths. Treating any one of these as ``the number of firms''
+can mechanically change which parent groups or jurisdictions dominate a
+result. Hierarchy adds a second problem. A location can be common because many
+entities reside there, because a smaller number of upstream entities have many
+descendants, or because one unusually large parent group repeats the same
+route. Those are different empirical statements.
+
+This paper asks a deliberately bounded question: how do the parent groups in
+\sample\ organize their reported foreign ownership networks across mapping
+channels, hierarchy, and jurisdictions, and which patterns remain after
+correcting units, duplicates, parent weights, missing nodes, and graph
+definitions? The goal is measurement-corrected description. The data do not
+identify why a structure exists, whether it is current, whether a named entity
+has a particular legal function, or whether any route has a tax or regulatory
+purpose.
+
+The analysis makes five contributions within that boundary. First, it builds
+an explicit denominator ladder from source observations to target, entity,
+edge, path, mapping-channel, and parent units. Second, it reconstructs a
+parent-scoped directed ownership graph while retaining named-but-unscraped
+parents and their supplied countries. Third, it separates resident geography
+from intermediary and descendant exposure. Fourth, it reports pooled,
+equal-parent, leave-one-parent-out, and alternative-definition estimates side
+by side. Fifth, it treats failed hypotheses as results: several initially
+striking depth, ownership, sector, and financial relationships do not support a
+general interpretation after the relevant correction.
+
+The central evidence is as follows. Parent networks are heterogeneous along
+dimensions that cannot be collapsed into a single defensible complexity
+ranking. Many are concentrated behind one mapping channel or one large
+observed subtree. Dutch and Mauritian first-hop entities have greater
+downstream amplification than their resident counts alone would suggest, while
+the United States is primarily prominent as a resident location. A majority
+of reported nonroot edges cross jurisdictions, and that result is unusually
+stable to parent balance. In contrast, reported deep hierarchy is concentrated
+in a few parent groups and differs materially from reconstructable graph
+distance. The financial layer is sparse and extraction-contaminated, so it
+supports an audit of measurement quality rather than comparative financial
+performance.
+
+The remainder of the paper defines the units and graph, documents the
+denominator correction, presents parent and jurisdictional topology, examines
+depth and financial limitations, and concludes with an explicit evidence
+boundary.
+
+\section{Data and analytical units}
+\label{sec:data}
+
+\subsection{Source structure and scope}
+
+The immutable input is a Stata file containing candidate financial-statement
+sources attached to reported foreign targets. The file has \RawRows\ rows and
+\Jurisdictions\ standardized jurisdiction labels across \Parents\ supplied
+ultimate-parent buckets. Rows are not unique companies. A target can recur for
+multiple fiscal years and can have multiple candidate sources within a year.
+The upstream preferred-source flag selects \PreferredRows\ target-year rows,
+but structural fields are invariant within each target identifier. The
+structural cross-section therefore contains \Targets\ target occurrences.
+
+The sample is not accompanied by a sampling frame for all Indian outward
+investment. No result below is generalized beyond the supplied parent buckets.
+Similarly, the file provides reported names and ownership relationships, not a
+complete legal-entity registry or verified historical ownership charts.
+
+\begin{table}[tbp]
+\centering
+\caption{The canonical denominator ladder}
+\label{tab:denominators}
+\small
+\input{outputs/final/tables/paper_01_denominators.tex}
+\begin{minipage}{0.94\textwidth}
+\footnotesize\vspace{0.4em}
+\textit{Notes:} Counts are generated from the immutable source by the
+canonical pipeline. A target occurrence is one reported ownership-path target.
+Normalized entities are conservative name--country candidates, not verified
+legal identities. A complete observed path reaches the Indian parent through
+observed entity nodes.
+\end{minipage}
+\end{table}
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\textwidth]{figure_01_denominators_and_depth.pdf}
+\caption{Analytical denominators and two measures of hierarchy depth}
+\label{fig:denominators}
+\begin{minipage}{0.94\textwidth}
+\footnotesize\textit{Notes:} Panel (a) uses a logarithmic count scale because
+the units differ sharply in size. Panel (b) compares the supplied reported
+level for all targets with graph distance among complete observed paths; these
+are not interchangeable measures.
+\end{minipage}
+\end{figure}
+
+\subsection{Targets, normalized entities, and mapping channels}
+
+The primary path and exposure unit is the target identifier. For within-parent
+architecture, entity names are normalized conservatively: Unicode is reduced
+to ASCII, case and punctuation are removed, ampersands are standardized, and
+the supplied country is spelling-harmonized. A parent-scoped entity key is the
+combination of ultimate-parent bucket, normalized name, and standardized
+country. This yields \ParentEntities\ candidates, only slightly fewer than the
+\Targets\ targets. Dropping the parent component yields \GlobalEntities
+global candidates. The difference is small in aggregate, but the estimands are
+conceptually distinct: a shared venture may be one global entity while still
+representing exposure in more than one parent network.
+
+The file also contains \UINs\ UIN values. They are retained as supplied and
+treated only as registration or mapping channels. The analysis does not infer
+the semantics of their substrings, a registration date, or legal-entity
+identity. \ObservedRoots\ UINs have an observed level-0 target, so two mapping
+channels lack an observed first-hop entity in this file.
+
+\subsection{Financial observations}
+
+Financial variables remain at the preferred target-year level. Coverage gates
+are reported separately from network construction. A target has a located
+source if any source row carries the supplied source-found indicator, a parsed
+balance sheet if equity is numeric in any row, and a valuation-ready record if
+the upstream ready flag is present at least once. Absolute monetary values are
+not pooled across currencies or unspecified units.
+
+\section{Ownership-network construction and estimands}
+\label{sec:methods}
+
+\subsection{Edge resolution}
+
+Each structural target supplies an entity name and country, reported level,
+immediate-parent name and country, UIN, and ultimate-parent bucket. Candidate
+parents are formed within the same ultimate-parent bucket from conservative
+name aliases. Candidate matches are ranked lexicographically by whether they
+occupy the expected preceding level, whether the supplied parent country
+matches, whether the original names match exactly, and whether the UIN matches.
+The canonical build accepts no fuzzy match.
+
+The result is one occurrence-level edge for each target. Level-0 targets link
+to an explicit Indian ultimate-parent node. Below level 0, \ExpectedLinks\ of
+\NonrootEdges\ relations link to an observed entity at the expected prior
+level, \OtherLevelLinks\ link to an observed entity at another reported level,
+and \MissingParentEdges\ terminate at one of \MissingParentNodes\ normalized
+named-but-unscraped parent nodes. These unresolved nodes retain their supplied
+country. Discarding the country would understate upstream exposure for some
+groups; treating the node as observed would overstate path completeness.
+
+Occurrence edges are collapsed to a logical entity graph for subtree and
+gateway calculations. The parent-specific normalized graphs are directed and
+acyclic under the accepted links. The graph preserves alternative reported
+parents where they exist rather than forcing a tree.
+
+\subsection{Paths and depth}
+
+For every target, recursion follows observed parents toward the ultimate
+parent. A path is complete only when it reaches that root through observed
+entities. This succeeds for \CompletePaths/\Targets\ targets
+(\CompletePathPct\pct). A path that encounters a named missing node remains
+useful for country exposure up to that node but is not declared complete.
+
+The supplied reported level and reconstructed graph distance are stored
+separately. Reported level may encode a hierarchy with nodes missing from the
+target table. Conversely, cross-channel name matching can create a shorter
+observed route than the reported sequence. Without external ownership charts,
+neither measure is relabeled as ``true'' depth.
+
+\subsection{Network concentration}
+
+Four concentration quantities answer different questions.
+
+\begin{itemize}
+  \item The \emph{modal-UIN share} is the fraction of a parent's targets
+  assigned to its largest UIN channel.
+  \item The \emph{largest observed subtree} counts normalized entity
+  descendants below the observed entity with the largest descendant set,
+  divided by the other entities in that parent network.
+  \item The \emph{named-node-inclusive subtree} also allows an unresolved
+  named parent to be the top node, while still not calling the path complete.
+  \item The \emph{strict DAG dominator} removes an observed node and counts the
+  entity nodes no longer reachable from the ultimate parent. It therefore
+  respects alternative routes that bypass the candidate node.
+\end{itemize}
+
+The subtree summaries use the \ConcentrationParents\ parent groups with at
+least fifteen targets. That threshold prevents very small groups from
+determining a median while retaining most of the structural sample. Subtree
+language describes the mapped topology. It does not establish legal control,
+cash-flow dependence, or an operational chokepoint.
+
+\subsection{Geographic roles}
+
+The analysis distinguishes three jurisdiction roles. \emph{Residence} counts
+normalized entities located in a jurisdiction. An \emph{observed
+intermediary} is a unique observed entity that appears as the parent of at
+least one logical edge. A jurisdiction is \emph{strictly upstream} of a target
+if it appears above the terminal target in the reconstructed path; the target's
+own residence is excluded from its exposure set. India is excluded as the
+ultimate root in foreign-jurisdiction role and cover calculations.
+
+A \emph{gateway} is an observed level-0 entity. Gateway amplification is the
+number of normalized entity descendants below it. Jurisdiction means weight
+gateways; parent-equal means first average gateways within parent and then
+average parents. A robustness subset retains gateways for which no single
+direct-child branch contains a majority of descendants.
+
+An edge is cross-border when the standardized child and immediate-parent
+country labels differ. The cross-border statistic excludes level-0 links to
+India, which would otherwise be cross-border by construction.
+
+\subsection{Weighting and robustness}
+
+For a binary target outcome $y_i$ and parent $p(i)$, the pooled estimand is
+$N^{-1}\sum_i y_i$. The equal-parent estimand is
+
+\[
+  \frac{1}{P}\sum_{p=1}^{P}\left(\frac{1}{N_p}\sum_{i:p(i)=p} y_i\right).
+\]
+
+The former describes target-weighted exposure in this file; the latter gives
+each parent bucket the same weight. Leave-one-parent-out estimates repeat the
+relevant pooled or fixed-effect calculation after excluding each parent in
+turn. Where units differ---entities, edges, paths, gateways, or parents---the
+paper labels the denominator explicitly rather than comparing percentages as
+though they shared an estimand.
+
+\section{Denominators and parent architecture}
+\label{sec:architecture}
+
+\subsection{Raw-row weighting changes the sample composition}
+
+The denominator correction is empirically first order. Tata Communications
+contributes \TataCommRawRows\ source rows but only \TataCommEntities
+parent-scoped normalized entities. Motherson contributes \MothersonRawRows
+rows but \MothersonEntities\ normalized entities. Thus the former is largest
+by source rows while the latter is largest by network entities. Any statistic
+computed directly on source rows would overweight targets with longer or more
+duplicated financial-source histories.
+
+The closeness of the target and normalized-entity totals is reassuring but
+does not make the units interchangeable. Four parent-scoped alias collapses
+are enough to matter for exact graph topology, and cross-parent shared names
+have a different interpretation from within-parent duplicates. The canonical
+tables therefore retain target and entity counts side by side.
+
+\subsection{Architecture is multidimensional}
+
+Figure~\ref{fig:parent-architecture} shows that group size, geographic breadth,
+reported depth, and channel concentration do not move together. Table
+\ref{tab:parent-examples} gives illustrative contrasts. Motherson is the
+largest entity network in the sample and has the greatest reported maximum
+depth, while Wipro spans more jurisdiction labels. Reliance Industries is
+large but shallow in reported levels. Tata Communications is much smaller as
+an entity network than its source-row count suggests. ONGC Videsh has many
+UIN channels relative to its target count and a shallow observed graph.
+
+These comparisons do not support a one-dimensional complexity index. A group
+can be broad but shallow, deep but concentrated behind one entry channel, or
+large because one subtree contains many acquired or portfolio entities.
+Calling any one of those structures ``more complex'' would impose an
+unvalidated weighting across substantively different axes.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=0.91\textwidth]{figure_02_parent_architecture.pdf}
+\caption{Parent groups combine size, geographic breadth, and depth differently}
+\label{fig:parent-architecture}
+\begin{minipage}{0.9\textwidth}
+\footnotesize\textit{Notes:} Each marker is one supplied ultimate-parent
+bucket. Marker color is maximum reported level; marker area increases with the
+within-parent modal-UIN target share. Entity count uses the parent-scoped
+normalized name--country key.
+\end{minipage}
+\end{figure}
+
+\begin{table}[tbp]
+\centering
+\caption{Illustrative parent architectures}
+\label{tab:parent-examples}
+\scriptsize
+\resizebox{\textwidth}{!}{\input{outputs/final/tables/paper_02_parent_examples.tex}}
+\begin{minipage}{0.98\textwidth}
+\footnotesize\vspace{0.4em}
+\textit{Notes:} Graph maximum is reconstructed distance among complete paths.
+Modal UIN is the largest UIN's share of target occurrences. Complete paths are
+reported as a percentage of the parent's targets. Rows are selected to
+illustrate contrasting architectures, not to rank firms.
+\end{minipage}
+\end{table}
+
+\FloatBarrier
+
+\section{Dominant channels and large subtrees}
+\label{sec:channels}
+
+The largest UIN within each parent accounts for \ModalUinCount/\Targets
+targets, or \ModalUinPct\pct\ pooled. Giving every parent equal weight produces
+\ModalUinEqualPct\pct; the median parent is \ModalUinMedianPct\pct, and the
+pooled leave-one-parent-out interval is narrow (Figure~\ref{fig:robustness}).
+Channel concentration is therefore not only an artifact of the largest parent
+bucket. At the same time, UIN is an administrative or mapping unit in this
+analysis, not a verified company or control node.
+
+Graph concentration yields a complementary result. Across the
+\ConcentrationParents\ larger groups, the median largest observed subtree
+contains \ObservedSubtreeMedian\pct\ of the other normalized entities. The
+median changes only modestly to \DagDominatorMedian\pct\ under the strict DAG
+dominator definition, which allows alternative paths to bypass the removed
+node. When named-but-unscraped parent nodes may sit at the top of a subtree,
+the median rises to \NamedNodeSubtreeMedian\pct.
+
+Figure~\ref{fig:channels} makes the conceptual separation visible. UIN and
+subtree shares are often close, but not always. A mapping channel can contain
+many targets whose observed graph is split, while a linked subtree can span
+more than one UIN. Missing parents can also reverse the apparent concentration
+of a particular group. The defensible result is that dominant mapped channels
+and large observed subtrees are common in this sample. It is not that every
+network has one legally dispositive company.
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{figure_03_channel_concentration.pdf}
+\caption{Channel concentration under alternative graph definitions}
+\label{fig:channels}
+\begin{minipage}{0.96\textwidth}
+\footnotesize\textit{Notes:} The sample is parent groups with at least fifteen
+targets. Subtree shares use normalized entity candidates and exclude the top
+node from the denominator. The strict DAG measure counts entities detached
+from the ultimate root after removing the candidate node. The hollow marker is
+the target-weighted modal-UIN share and therefore uses a different unit.
+\end{minipage}
+\end{figure}
+
+\FloatBarrier
+
+\section{Geography and intermediary structure}
+\label{sec:geography}
+
+\subsection{Cross-border ownership relations}
+
+Among \NonrootEdges\ reported child--parent relations below level 0,
+\CrossBorderEdges\ cross a standardized jurisdiction boundary. The pooled
+share is \CrossBorderPct\pct, the equal-parent mean is
+\CrossBorderEqualPct\pct, and the leave-one-parent-out range is
+\CrossBorderLooLow--\CrossBorderLooHigh\pct. Recomputing with the raw supplied
+country labels gives essentially the same result (Table~\ref{tab:robustness}).
+This is one of the most definition-stable structural facts in the study.
+
+The interpretation remains modest. A cross-border edge says only that the
+reported child and immediate parent carry different country labels. It does
+not reveal operating location, management, tax residence, legal control, or
+the purpose of the relation.
+
+\subsection{First-hop gateway amplification}
+
+Table~\ref{tab:gateways} and Figure~\ref{fig:gateways} treat each observed
+level-0 entity as a gateway and count normalized descendants below it. Dutch
+gateways have a mean of \DutchGatewayMean\ descendants and median of
+\DutchGatewayMedian. The parent-equal mean is \DutchGatewayEqualMean, and the
+pooled leave-one-parent-out means range from \DutchGatewayLooLow\ to
+\DutchGatewayLooHigh. Restricting to gateways without a single majority child
+branch gives a mean of \DutchGatewayRobustMean, so the average is not generated
+only by one immediate acquisition branch per gateway.
+
+Mauritian gateways also show greater amplification than the United States
+comparison, although their median is well below their mean. United States
+gateways are numerous and span many parents, but typically have fewer
+descendants. The comparison illustrates why resident prevalence and network
+role must be measured separately.
+
+\begin{table}[tbp]
+\centering
+\caption{Downstream amplification by selected first-hop jurisdiction}
+\label{tab:gateways}
+\scriptsize
+\resizebox{\textwidth}{!}{\input{outputs/final/tables/paper_03_gateway_amplification.tex}}
+\begin{minipage}{0.97\textwidth}
+\footnotesize\vspace{0.4em}
+\textit{Notes:} One gateway is one observed level-0 normalized entity. Mean
+and median weight gateways. The parent-equal mean first averages gateways
+within parent. The LOO range repeats the gateway-weighted mean after omitting
+each parent. The table shows selected jurisdictions; the full generated table
+contains every jurisdiction with at least three gateways.
+\end{minipage}
+\end{table}
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=0.93\textwidth]{figure_04_gateway_amplification.pdf}
+\caption{First-hop jurisdictions differ in downstream amplification}
+\label{fig:gateways}
+\begin{minipage}{0.91\textwidth}
+\footnotesize\textit{Notes:} Each blue point is an observed level-0 gateway;
+diamonds mark jurisdiction medians. The horizontal axis uses a symmetric-log
+display to retain zero-descendant gateways. The plotted jurisdictions each
+have at least five observed gateways.
+\end{minipage}
+\end{figure}
+
+\subsection{Residence, intermediary prevalence, and path exposure}
+
+There are \ObservedIntermediaries\ unique observed parent nodes in the logical
+entity graph. Table~\ref{tab:roles} contrasts their distribution with resident
+entity counts and target paths. The United States is the largest resident
+location among the displayed jurisdictions. The Netherlands and Mauritius,
+however, have substantially more target paths below them relative to their
+resident counts. Figure~\ref{fig:roles} generalizes that comparison: points
+above the diagonal have more descendant paths than resident entities, while
+points below it are more terminal in this mapped topology.
+
+The Netherlands is strictly upstream of \DutchUpstreamPct\pct\ of target
+paths, compared with \DutchUpstreamEqualPct\pct\ after equal-parent weighting.
+The pooled value is therefore partly a function of the sizes of the parent
+networks using Dutch routes, but the role does not disappear when parents are
+balanced.
+
+The greedy union of the Netherlands, United States, and Mauritius is strictly
+upstream of \TopThreeCount/\Targets\ target paths (\TopThreePct\pct). The
+equal-parent union is only \TopThreeEqualPct\pct, and removing a large set of
+venture-fund children gives \TopThreeNoFundsPct\pct. The gap is substantive:
+the pooled cover is a descendant-weighted exposure statistic, not the share of
+unique intermediaries and not a counterfactual measure of what would be
+disconnected if three jurisdictions vanished.
+
+\begin{table}[tbp]
+\centering
+\caption{Selected jurisdiction roles under distinct denominators}
+\label{tab:roles}
+\scriptsize
+\resizebox{\textwidth}{!}{\input{outputs/final/tables/paper_04_jurisdiction_roles.tex}}
+\begin{minipage}{0.97\textwidth}
+\footnotesize\vspace{0.4em}
+\textit{Notes:} Residents are parent-scoped normalized entities. Intermediaries
+are unique observed parent nodes. Paths below count target paths on which the
+jurisdiction appears strictly upstream, including a supplied country on a
+named unresolved node. Pooled and parent-equal percentages use target paths;
+``Parents'' is the number of parent buckets affected.
+\end{minipage}
+\end{table}
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=0.88\textwidth]{figure_05_jurisdiction_roles.pdf}
+\caption{Resident prevalence and downstream network reach are distinct}
+\label{fig:roles}
+\begin{minipage}{0.88\textwidth}
+\footnotesize\textit{Notes:} Both axes are logarithmic. Marker area increases
+with the number of parent groups affected. Color is the jurisdiction's share
+of unique observed intermediary nodes divided by its share of resident
+entities, capped for display. India is excluded as the ultimate root.
+\end{minipage}
+\end{figure}
+
+\subsection{Why a fixed ``centre'' category is not a core result}
+
+A maintained list of frequently discussed financial or intermediary locations
+is upstream of \DeclaredCentrePct\pct\ of target paths, and the equal-parent
+estimate is \DeclaredCentreEqualPct\pct. But only
+\DeclaredCentreNodePct\pct\ of unique observed intermediary nodes fall in the
+same list. The path figure repeats a shared upstream node for every descendant,
+and the list itself is imposed rather than observed. It also combines
+locations that may host operating, financing, acquisition, or holding
+entities. The canonical study therefore reports specific measured roles and
+keeps the aggregate classification as a labeled sensitivity analysis.
+
+\FloatBarrier
+
+\section{Reported depth and observed graph distance}
+\label{sec:depth}
+
+Nearly half of targets are reported below the first foreign layer:
+\DepthTwoPlusCount/\Targets\ (\DepthTwoPlusPct\pct) have reported level 2 or
+higher. The apparently deep tail is less stable. Reported level 5 or higher
+contains \DepthFivePlusCount\ targets (\DepthFivePlusPct\pct), while the
+equal-parent mean is only \DepthFiveEqualPct\pct. Among complete paths, just
+\GraphDepthFivePct\pct\ have reconstructed distance 5 or greater.
+
+The measures disagree directly for \DepthMismatchCount/\CompletePaths
+complete paths (\DepthMismatchPct\pct). Motherson contributes
+\MothersonMismatchShare\pct\ of these mismatches. Figure~\ref{fig:depth}
+shows that the maximum reported and reconstructed depths can diverge sharply
+within a group. Reported level may preserve omitted layers; reconstructed
+distance may be a lower bound. The concentration of disagreements in one
+parent also means that a pooled depth correction cannot be assumed to apply
+uniformly.
+
+The sector result provides a falsification exercise. Of
+\ManufacturingTargets\ targets labeled general manufacturing,
+\DeepManufacturing\ are reported at level 5 or deeper. That looks like a broad
+sector-depth association until parent composition is examined: Motherson and
+Hindalco account for \DeepManufacturingTopTwo/\DeepManufacturing
+(\DeepManufacturingTopTwoPct\pct) of the deep manufacturing targets. The
+paper therefore rejects ``manufacturing subsidiaries are generally deeper''
+as a sample-wide conclusion.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=0.91\textwidth]{figure_06_reported_vs_graph_depth.pdf}
+\caption{Reported depth and reconstructable graph distance diverge}
+\label{fig:depth}
+\begin{minipage}{0.91\textwidth}
+\footnotesize\textit{Notes:} Each row is one parent bucket. Blue markers show
+maximum supplied reported level. Orange markers show maximum reconstructed
+distance among paths that reach the ultimate parent through observed entity
+nodes. The connecting segment is descriptive; neither endpoint is designated
+the legal truth.
+\end{minipage}
+\end{figure}
+
+\FloatBarrier
+
+\section{Ownership fields, financial coverage, and structural proxies}
+\label{sec:financial}
+
+\subsection{Recorded stakes and the ownership-depth gradient}
+
+Stake information cannot support a complete control-weighted network. Every
+observed level-0 target has missing mapping stake, and \ZeroStakeCount\ of
+\NonrootEdges\ nonroot relations record exactly zero (\ZeroStakePct\pct).
+Where a preferred financial row contains both mapping stake and an AOC-1
+shareholding measure, each comparable zero-stake case is contradicted by a
+positive AOC value (Appendix~\ref{app:ownership}). The zeros are therefore
+treated as unknown, not as literal absence of ownership.
+
+Restricting to positive-stake edges produces a superficially strong gradient:
+the full-ownership rate is \OwnershipLevelOne\pct\ at reported level 1 and
+\OwnershipLevelTwoPlus\pct\ at level 2 or deeper, a pooled difference of
+\OwnershipPooledGap\ \pp. The equal-parent difference is only
+\OwnershipEqualGap\ points, and excluding Reliance reduces the pooled gap to
+\OwnershipNoRelianceGap\ points. The stable conclusion is a parent and
+portfolio composition effect, not that ownership mechanically strengthens
+with depth. Cumulative ownership along full paths is excluded because it would
+condition on positive recorded stakes and treat unresolved zeros selectively.
+
+\subsection{Financial attrition and extraction reuse}
+
+Figure~\ref{fig:financial} and Table~\ref{tab:financial} document the financial
+coverage funnel. A source is located for \SourceTargets/\Targets\ targets, a
+balance sheet is parsed for \ParsedTargets, and only \ReadyTargets\ targets
+are ready at least once. The preferred panel contains \ReadyRows\ ready
+target-years; \SignPlausibleRows\ pass a positive-assets and nonnegative-
+liabilities gate, and only \PlValidRows\ have a testable valid profit-and-loss
+identity. Units are blank for \MissingUnitsReady/\ReadyRows\ ready rows.
+
+Duplicate-evidence checks reinforce the limitation. There are
+\RepeatedClusters\ repeated signatures defined jointly by fiscal year,
+currency, units, assets, liabilities, and equity; they cover \RepeatedRows
+parsed rows. In
+\EvidenceReuseClusters\ clusters, the same source URL is attached to different
+entity names and the core evidence text is byte-identical. A broad union of
+repeated-signature and sign flags leaves \BroadUnflaggedRows\ ready rows, but
+that remainder is a diagnostic, not a validated analysis sample.
+
+Readiness itself varies greatly across parents, and \ParentsNoReady\ parents
+have no ready target. The raw association between reported depth 3+ and
+readiness is \FinancialRawDepthGap\ \pp; a parent fixed-effect coefficient is
+\FinancialFeDepthGap\ points, with leave-one-parent-out estimates from
+\FinancialLooLow\ to \FinancialLooHigh\ points. This is attenuation rather
+than elimination, but selection, unit missingness, and extraction reuse make a
+financial-performance interpretation indefensible.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\textwidth]{figure_07_financial_attrition.pdf}
+\caption{Financial coverage is sparse and quality-selected}
+\label{fig:financial}
+\begin{minipage}{0.94\textwidth}
+\footnotesize\textit{Notes:} Panel (a) counts structural targets at successive
+coverage gates. Panel (b) counts preferred target-year rows. The broad screen
+flags either a repeated numeric signature or an implausible sign combination;
+its unflagged remainder has not been manually validated.
+\end{minipage}
+\end{figure}
+
+\begin{table}[tbp]
+\centering
+\caption{Financial coverage and quality diagnostics}
+\label{tab:financial}
+\scriptsize
+\resizebox{\textwidth}{!}{\input{outputs/final/tables/paper_06_financial_audit.tex}}
+\begin{minipage}{0.98\textwidth}
+\footnotesize\vspace{0.4em}
+\textit{Notes:} The value column is a percentage except for diagnostics whose
+unit states otherwise. Repeated numeric signatures are fiscal-year/currency/
+units/assets/liabilities/equity clusters. Demonstrated reuse additionally
+requires the same URL, different target names, and byte-identical core evidence
+text.
+\end{minipage}
+\end{table}
+
+\subsection{A limited name-based structural proxy}
+
+One supporting result survives a within-cell test. \HoldingNameCount\ targets
+contain ``Holding(s),'' ``Holdco,'' or ``Investment(s)'' in the normalized
+name. \HoldingNameHolderPct\pct\ of flagged targets hold at least one observed
+child, compared with \OtherNameHolderPct\pct\ of other targets. Residualizing
+both the outcome and name flag within parent-by-country cells gives a
+\HoldingNameFeGap-point association. This suggests that names can be a useful
+high-precision, low-recall structural proxy when edges are absent. It does not
+verify a legal role, and external role labels and held-out-parent validation
+would be required before using it as a general classifier.
+
+\FloatBarrier
+
+\section{Robustness, heterogeneity, and evidence classification}
+\label{sec:robustness}
+
+Figure~\ref{fig:robustness} and Table~\ref{tab:robustness} collect the main
+robustness results on one scale. Three patterns are notably stable. The
+cross-border edge share barely moves under equal-parent weighting, raw country
+labels, or leave-one-parent-out checks. Modal-UIN concentration also remains
+high under parent balance. Dutch gateway amplification remains large under
+equal-parent weighting, omission of any one parent, and the no-majority-branch
+restriction.
+
+Other estimates change meaningfully. The three-country upstream union and
+reported deep share fall under equal-parent weighting. The full-ownership
+depth gap shrinks sharply under parent correction. Financial readiness retains
+a small negative within-parent depth association, but its LOO range and severe
+measurement attrition preclude substantive inference. The maintained-centre
+exposure is much smaller when the unit is unique observed intermediary nodes
+rather than descendant paths.
+
+No formal probability sample underlies the \Parents\ parent buckets, so the
+paper does not present sampling-error $p$-values as though they supported
+population inference. Robustness here means sensitivity to measurement and
+composition: unique entities versus repeated targets, pooled versus parent-
+balanced weights, omission of any one parent, alternative graph definitions,
+fund exclusions, and explicit missingness rules.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\textwidth]{figure_08_robustness_ladder.pdf}
+\caption{Pooled estimates, parent balance, and definition sensitivity}
+\label{fig:robustness}
+\begin{minipage}{0.96\textwidth}
+\footnotesize\textit{Notes:} Grey segments are leave-one-parent-out ranges
+where applicable. Blue circles show pooled or primary estimates, orange
+squares show equal-parent estimates, and red triangles show the labeled
+alternative definition. Rows share a percent scale but not necessarily the
+same observation unit; Table~\ref{tab:robustness} states each unit.
+\end{minipage}
+\end{figure}
+
+\begin{landscape}
+\begin{table}[p]
+\centering
+\caption{Canonical robustness matrix}
+\label{tab:robustness}
+\scriptsize
+\resizebox{\linewidth}{!}{\input{outputs/final/tables/paper_05_robustness.tex}}
+\begin{minipage}{0.97\linewidth}
+\footnotesize\vspace{0.4em}
+\textit{Notes:} ``Primary'' is pooled unless the row labels a median-parent
+estimand. FE denotes a fixed-effect coefficient. LOO repeats the relevant
+pooled or fixed-effect estimator after dropping each parent. Alternatives are
+not always percentages of the same unit and should be read with the definition
+column.
+\end{minipage}
+\end{table}
+\end{landscape}
+
+\section{Limitations and interpretation boundary}
+\label{sec:limitations}
+
+The study's limitations are part of its empirical result rather than a generic
+disclaimer.
+
+\begin{itemize}
+  \item \textbf{Sample scope.} The parent buckets are supplied, not sampled
+  from a documented universe. Results describe these groups and cannot
+  establish prevalence across Indian multinational firms.
+  \item \textbf{Entity identity.} Normalized names and countries are candidate
+  identities. They cannot distinguish every alias, reorganization, joint
+  exposure, or legally separate same-name company without registration
+  identifiers.
+  \item \textbf{Hierarchy completeness.} Named missing parents truncate paths,
+  and reported levels disagree with observed graph distance. External
+  ownership charts are required to adjudicate which representation is legally
+  or historically correct.
+  \item \textbf{UIN semantics.} The data establish mapping-channel
+  concentration but do not validate the meaning of UIN substrings or their
+  use as dates, office codes, or ownership types. Vintage claims are therefore
+  excluded.
+  \item \textbf{Jurisdiction labels.} A country label is not proof of operating
+  location, management, tax residence, or entity function. The data cannot
+  identify a tax, treaty, financing, acquisition, governance, or operating
+  motive.
+  \item \textbf{Ownership measurement.} Missing level-0 stakes and contradicted
+  zero values prevent control weighting and cumulative-ownership inference.
+  \item \textbf{Financial selection.} Sparse coverage, blank units, mixed
+  currencies, invalid signs, limited P\&L identities, and demonstrated evidence
+  reuse rule out population financial comparisons.
+  \item \textbf{Time and current status.} The source combines reported
+  structures and source years but does not validate a common current ownership
+  date for every edge. The network is a reconstruction of the supplied report,
+  not a claim about present legal control.
+\end{itemize}
+
+Accordingly, unusual topology is not evidence of wrongdoing. The paper does
+not label any company, jurisdiction, route, or transaction fraudulent,
+illegal, evasive, abusive, or improper. Legal, regulatory, institutional, and
+tax interpretations require external evidence and are outside the identified
+design.
+
+\section{Conclusion}
+
+The canonical reconstruction changes the object of study from a financial-
+source panel into an explicit set of target occurrences, normalized entity
+candidates, edges, and ownership paths. That correction is not cosmetic: it
+reverses parent rankings and prevents long source histories from masquerading
+as large corporate networks.
+
+Within the supplied sample, parent architectures are genuinely heterogeneous.
+Dominant mapping channels and large subtrees are common, but their magnitudes
+depend on whether the unit is a UIN, observed subtree, named-node-inclusive
+subtree, or strict graph dominator. The Netherlands and Mauritius occupy
+intermediary and gateway roles that are not reducible to resident counts, and
+the majority-cross-border-edge result is stable to parent reweighting. These
+are defensible facts about the mapped topology.
+
+The negative findings are equally important. Deep manufacturing is almost
+entirely a two-parent pattern. The pooled ownership-depth gradient is largely
+composition. Reported depth is not observed graph distance. The financial
+layer cannot support comparative performance claims. A credible study of
+corporate ownership networks therefore depends as much on refusing the wrong
+denominator and interpretation as on finding a large statistic.
+
+Future work can extend the evidence boundary only with new validated inputs:
+official entity identifiers, dated ownership charts, documented UIN semantics,
+verified stake fields, harmonized financial units, and a transparent sampling
+frame. Until then, the contribution is a reproducible, falsifiable map of the
+reported network structure in this dataset.
+
+\clearpage
+\appendix
+\input{paper/appendix.tex}
+
+\end{document}

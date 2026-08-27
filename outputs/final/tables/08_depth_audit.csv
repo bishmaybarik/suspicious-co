@@ -1,0 +1,11 @@
+statistic,numerator,denominator,value_pct,unit
+Reported level 2+,871,1834,47.49182116,target occurrences
+Reported level 5+,342,1834,18.64776445,target occurrences
+"Reported level 5+, equal-parent",,28,7.336841647,parent mean
+"Reported level 5+, LOO minimum",,27,8.590163934,target occurrences after one parent omitted
+"Reported level 5+, LOO maximum",,27,20.87912088,target occurrences after one parent omitted
+Reconstructed distance 5+,125,1687,7.409602845,complete paths
+Reported/reconstructed mismatch,236,1687,13.98933017,complete paths
+Motherson share of mismatches,208,236,88.13559322,mismatching complete paths
+Manufacturing targets at reported level 5+,242,508,47.63779528,manufacturing target occurrences
+Motherson + Hindalco share of deep manufacturing,240,242,99.17355372,reported level-5+ manufacturing targets

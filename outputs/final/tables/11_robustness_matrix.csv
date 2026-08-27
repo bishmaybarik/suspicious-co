@@ -1,0 +1,13 @@
+estimand,unit,pooled_or_primary,equal_parent_or_fe,loo_min,loo_max,alternative,alternative_definition
+Cross-border nonroot edges,%,57.63636364,58.66890989,56.05962411,61.77868296,57.45454545,Raw-label sensitivity
+Modal UIN channel,% of targets,59.70556161,62.05077393,57.18424102,62.75409836,61.15789474,Median parent
+Largest observed subtree,median parent %,43.20201422,,,,41.71504739,Strict DAG dominator
+Largest subtree incl. named missing nodes,median parent %,50.77702703,,,,43.20201422,Observed-node baseline
+Dutch gateway amplification,mean descendants,34.84615385,37.08333333,21.25,39.72727273,37.75,No majority child branch
+Netherlands strictly upstream,% of targets,29.4438386,20.88493784,22.42622951,32.96703297,,Descendant/path estimand
+Netherlands + US + Mauritius upstream,% of targets,62.15921483,46.6524504,59.58823529,63.58059119,59.76811594,Exclude venture-fund children
+Reported depth 5+,% of targets,18.64776445,7.336841647,8.590163934,20.87912088,7.409602845,"Reconstructed depth 5+, complete paths"
+Full-ownership depth gap,percentage points,26.41171278,2.328922151,,,6.097326705,Exclude Reliance
+Financial-ready deep gap,percentage points,-6.649533854,-2.417826681,-6.620356454,-0.7712212971,,Parent FE in equal-parent column
+Holding-name role gap,percentage points,46.84492088,36.33891291,34.7647999,38.3256386,,Parent-country FE in equal-parent column
+Declared-centre upstream exposure,% of targets,61.83206107,57.16721036,57.7704918,67.88766789,37.96526055,Unique-node sensitivity

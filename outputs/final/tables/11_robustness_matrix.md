@@ -1,0 +1,14 @@
+| estimand                                  | unit              |   pooled_or_primary |   equal_parent_or_fe |   loo_min |   loo_max |   alternative | alternative_definition                   |
+|:------------------------------------------|:------------------|--------------------:|---------------------:|----------:|----------:|--------------:|:-----------------------------------------|
+| Cross-border nonroot edges                | %                 |              57.636 |               58.669 |    56.060 |    61.779 |        57.455 | Raw-label sensitivity                    |
+| Modal UIN channel                         | % of targets      |              59.706 |               62.051 |    57.184 |    62.754 |        61.158 | Median parent                            |
+| Largest observed subtree                  | median parent %   |              43.202 |              nan     |   nan     |   nan     |        41.715 | Strict DAG dominator                     |
+| Largest subtree incl. named missing nodes | median parent %   |              50.777 |              nan     |   nan     |   nan     |        43.202 | Observed-node baseline                   |
+| Dutch gateway amplification               | mean descendants  |              34.846 |               37.083 |    21.250 |    39.727 |        37.750 | No majority child branch                 |
+| Netherlands strictly upstream             | % of targets      |              29.444 |               20.885 |    22.426 |    32.967 |       nan     | Descendant/path estimand                 |
+| Netherlands + US + Mauritius upstream     | % of targets      |              62.159 |               46.652 |    59.588 |    63.581 |        59.768 | Exclude venture-fund children            |
+| Reported depth 5+                         | % of targets      |              18.648 |                7.337 |     8.590 |    20.879 |         7.410 | Reconstructed depth 5+, complete paths   |
+| Full-ownership depth gap                  | percentage points |              26.412 |                2.329 |   nan     |   nan     |         6.097 | Exclude Reliance                         |
+| Financial-ready deep gap                  | percentage points |              -6.650 |               -2.418 |    -6.620 |    -0.771 |       nan     | Parent FE in equal-parent column         |
+| Holding-name role gap                     | percentage points |              46.845 |               36.339 |    34.765 |    38.326 |       nan     | Parent-country FE in equal-parent column |
+| Declared-centre upstream exposure         | % of targets      |              61.832 |               57.167 |    57.770 |    67.888 |        37.965 | Unique-node sensitivity                  |
