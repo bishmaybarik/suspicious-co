@@ -1,0 +1,30 @@
+| dropped                         |   pct |
+|:--------------------------------|------:|
+| SAMVARDHANA MOTHERSON INTERNATI | 57.7  |
+| BHARTI AIRTEL LIMITED           | 58.59 |
+| JINDAL STEEL AND POWER LTD      | 58.98 |
+| UPL LIMITED                     | 59.61 |
+| SUZLON ENERGY LTD.              | 60.55 |
+| DR REDDYS LABORATORIES LTD      | 60.57 |
+| TATA STEEL LTD                  | 60.76 |
+| TATA COMMUNICATIONS LIMITED     | 60.76 |
+| GLENMARK PHARMACEUTICALS LTD.   | 60.86 |
+| HINDALCO INDUSTRIES LIMITED     | 60.87 |
+| BHARAT PETRORESOURCES LTD       | 61.08 |
+| PIRAMAL ENTERPRISES LTD         | 61.14 |
+| INDIAN OIL CORPORATION LTD.     | 61.24 |
+| ICICI BANK LIMITED              | 61.33 |
+| ADANI PORT AND SPECIAL ECONOMIC | 61.35 |
+| TATA MOTORS PASSENGER VEHICLES  | 61.37 |
+| OIL INDIA LIMITED               | 61.42 |
+| MAHINDRA & MAHINDRA LTD         | 61.44 |
+| VEDANTA LIMITED                 | 61.56 |
+| SUN PHARMACEUTICAL INDUSTRIES L | 61.57 |
+| RELIANCE ENERGY GENERATION & DI | 61.57 |
+| TATA CHEMICALS LIMITED          | 61.62 |
+| ONGC VIDESH LTD.                | 61.74 |
+| JSW STEEL LIMITED               | 61.89 |
+| INFOSYS LTD                     | 61.9  |
+| BIOCON BIOLOGICS LIMITED        | 62.01 |
+| WIPRO LTD                       | 63.79 |
+| RELIANCE INDUSTRIES LTD         | 67.22 |
