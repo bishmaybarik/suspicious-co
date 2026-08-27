@@ -51,7 +51,13 @@ def set_style() -> None:
 def save(fig: plt.Figure, directory: Path, name: str) -> None:
     directory.mkdir(parents=True, exist_ok=True)
     fig.savefig(directory / f"{name}.png", bbox_inches="tight")
-    fig.savefig(directory / f"{name}.pdf", bbox_inches="tight")
+    # Suppressing the PDF creation date keeps figure bytes reproducible, so the
+    # manifest hashes and the validator cover the vector figures as well.
+    fig.savefig(
+        directory / f"{name}.pdf",
+        bbox_inches="tight",
+        metadata={"CreationDate": None},
+    )
     plt.close(fig)
 
 
@@ -91,22 +97,24 @@ def figure_denominators(results: FinalResults, directory: Path) -> None:
 
     x = depth["level"].to_numpy()
     width = 0.38
+    # Each measure is shown as a share of its own denominator: reported level is
+    # defined for all targets, graph distance only for complete paths.
     axes[1].bar(
         x - width / 2,
-        depth["reported_target_occurrences"],
+        depth["reported_pct_all_targets"],
         width,
         color=BLUE,
-        label="Reported level (all targets)",
+        label="Reported level (% of all targets)",
     )
     axes[1].bar(
         x + width / 2,
-        depth["reconstructed_complete_paths"],
+        depth["reconstructed_pct_complete_paths"],
         width,
         color=ORANGE,
-        label="Graph distance (complete paths)",
+        label="Graph distance (% of complete paths)",
     )
     axes[1].set_xlabel("Ownership level/distance")
-    axes[1].set_ylabel("Target paths")
+    axes[1].set_ylabel("Share of own denominator (%)")
     axes[1].set_xticks(range(0, 13, 2))
     axes[1].set_title("b. Reported depth is not observed graph distance", loc="left")
     axes[1].legend(loc="upper right", fontsize=8)
@@ -129,6 +137,8 @@ def figure_parent_architecture(results: FinalResults, directory: Path) -> None:
         alpha=0.9,
     )
     ax.set_xscale("log")
+    # Extra right margin so that right-hand parent labels are never clipped.
+    ax.set_xlim(7, 700)
     ax.set_xlabel("Parent-scoped normalized entity candidates (log scale)")
     ax.set_ylabel("Jurisdiction labels represented")
     ax.set_title("Parent groups combine size, geographic breadth, and depth differently")
@@ -137,17 +147,21 @@ def figure_parent_architecture(results: FinalResults, directory: Path) -> None:
         "Tata Communications",
         "ONGC Videsh",
     }
+    # Offsets are set per label so that no leader crosses another marker; every
+    # label carries a leader line so the association is never ambiguous.
     label_positions = {
-        "Bharti Airtel": (-5, 5, "right"),
-        "Hindalco": (7, 11, "left"),
-        "Jindal Steel & Power": (-5, -9, "right"),
-        "Motherson": (-5, 5, "right"),
-        "Reliance Industries": (-8, -11, "right"),
-        "Wipro": (-5, 5, "right"),
+        "Bharti Airtel": (-14, 14, "right"),
+        "Hindalco": (8, 14, "left"),
+        "Jindal Steel & Power": (-14, -14, "right"),
+        "Motherson": (-12, 12, "right"),
+        "Reliance Industries": (14, -12, "left"),
+        "Tata Communications": (-12, 12, "right"),
+        "UPL": (12, 10, "left"),
+        "Wipro": (-12, 10, "right"),
     }
     for row in frame[frame["parent_short"].isin(labels)].itertuples(index=False):
         x_offset, y_offset, alignment = label_positions.get(
-            row.parent_short, (5, 5, "left")
+            row.parent_short, (12, -12, "left")
         )
         ax.annotate(
             row.parent_short,
@@ -155,7 +169,15 @@ def figure_parent_architecture(results: FinalResults, directory: Path) -> None:
             xytext=(x_offset, y_offset),
             textcoords="offset points",
             ha=alignment,
+            va="center",
             fontsize=8,
+            arrowprops={
+                "arrowstyle": "-",
+                "color": GREY,
+                "linewidth": 0.6,
+                "shrinkA": 1,
+                "shrinkB": 5,
+            },
         )
     colorbar = fig.colorbar(scatter, ax=ax, pad=0.02)
     colorbar.set_label("Maximum reported level")
@@ -300,7 +322,11 @@ def figure_jurisdiction_roles(results: FinalResults, directory: Path) -> None:
     ax.set_xlabel("Resident parent-scoped entities (log scale)")
     ax.set_ylabel("Target paths with jurisdiction strictly upstream (log scale)")
     ax.set_title("Resident prevalence and downstream network reach are distinct")
-    focus = set(frame.nlargest(10, "target_paths_below")["jurisdiction"]) | {
+    # Label only jurisdictions whose position rests on at least five parent
+    # groups: high-leverage one- or two-parent cells (for example Jersey and
+    # Estonia) are real but not general, and must not be visually promoted.
+    labelled = frame[frame["parents_affected"].ge(5)]
+    focus = set(labelled.nlargest(10, "target_paths_below")["jurisdiction"]) | {
         "UNITED STATES OF AMERICA",
         "NETHERLANDS",
         "MAURITIUS",
@@ -368,14 +394,15 @@ def figure_financial_attrition(results: FinalResults, directory: Path) -> None:
         "Targets with parsed balance sheet",
         "Targets valuation-ready at least once",
     ]
+    # Ordered by count so both panels read downwards as an attrition funnel.
     row_stages = [
         "Ready target-year rows",
         "Sign-plausible ready rows",
-        "P&L-valid rows",
         "Ready rows unflagged by broad duplicate/sign screen",
+        "P&L-valid rows",
     ]
     target_labels = ["All targets", "Source found", "Balance parsed", "Ready at least once"]
-    row_labels = ["Ready rows", "Sign plausible", "P&L valid", "Broad screen unflagged"]
+    row_labels = ["Ready rows", "Sign plausible", "Broad screen unflagged", "P&L valid"]
 
     fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.2), gridspec_kw={"wspace": 0.32})
     for ax, stages, labels, title, color in [
@@ -398,9 +425,12 @@ def figure_financial_attrition(results: FinalResults, directory: Path) -> None:
 
 def figure_robustness(results: FinalResults, directory: Path) -> None:
     frame = results.plot_data["robustness"].set_index("estimand")
+    # Percent-scale rows only; amplification and percentage-point rows of the
+    # robustness matrix use other units and stay in the table.
     focus = [
         "Cross-border nonroot edges",
         "Modal UIN channel",
+        "Largest observed subtree",
         "Netherlands strictly upstream",
         "Netherlands + US + Mauritius upstream",
         "Reported depth 5+",
@@ -408,7 +438,7 @@ def figure_robustness(results: FinalResults, directory: Path) -> None:
     ]
     work = frame.loc[focus].iloc[::-1]
     y = np.arange(len(work))
-    fig, ax = plt.subplots(figsize=(8.4, 4.8))
+    fig, ax = plt.subplots(figsize=(8.4, 4.6))
     for pos, row in zip(y, work.itertuples(index=False)):
         if not pd.isna(row.loo_min):
             ax.plot([row.loo_min, row.loo_max], [pos, pos], color=GREY, linewidth=2)

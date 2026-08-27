@@ -1,0 +1,21 @@
+scope,statement
+Established by this dataset,"Unit counts: source rows, preferred target-years, target occurrences, normalized entity candidates, edges, paths, UINs, and parent buckets."
+Established by this dataset,"Reported parent-child topology and supplied country labels, subject to the documented unresolved-node and name-resolution limits."
+Established by this dataset,"Reported level and reconstructed graph distance, reported separately, and the targets at which they disagree."
+Established by this dataset,"Descendant counts below observed first-hop entities, by first-hop jurisdiction, under gateway, parent-equal, and omission weighting."
+Established by this dataset,"Concentration of a parent network behind one mapping channel, one observed subtree, or one strict graph dominator."
+Established by this dataset,"Residence, unique-intermediary, and strictly-upstream path exposure of each jurisdiction, each with its own denominator."
+Established by this dataset,Share of nonroot edges whose child and parent country labels differ.
+Established by this dataset,"Internal contradictions between recorded mapping stakes and AOC-1 shareholding, and the coverage of each ownership field."
+Established by this dataset,"Financial source, parse, readiness, sign, and P&L gates, and the reuse of identical extracted evidence across differently named targets."
+Established by this dataset,"Association between holding-type naming and observed holder status, within parent-by-country cells."
+Requires external evidence,"Whether a named entity is legally identical to a same-name entity, an alias, or a jointly held vehicle."
+Requires external evidence,Whether reported level or reconstructed graph distance is the legally correct ownership distance.
+Requires external evidence,"Whether UIN characters encode a registering office, an investment type, or a registration year."
+Requires external evidence,"Whether any entity is a tax, treaty, financing, acquisition, governance, or operating vehicle."
+Requires external evidence,"Whether a route was designed or inherited through acquisition, and whether it reflects current legal control."
+Requires external evidence,"Whether removing a jurisdiction would detach, reroute, or tax the entities measured below it."
+Requires external evidence,"Whether any jurisdiction belongs in a 'financial centre' category; the list used here is maintained, not observed."
+Requires external evidence,Whether recorded stakes measure economic ownership or control at any specific date.
+Requires external evidence,"Whether extracted financial values are correct, comparable across currencies and units, or representative of the underlying firms."
+Requires external evidence,"Whether the 28 supplied parent buckets represent Indian outward investment, or any other population."

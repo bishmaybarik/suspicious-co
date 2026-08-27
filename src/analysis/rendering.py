@@ -42,7 +42,9 @@ def human_number(value: Any, decimals: int = 1) -> str:
     if isinstance(value, (np.integer, int)):
         return f"{int(value):,}"
     if isinstance(value, (np.floating, float)):
-        if float(value).is_integer() and abs(value) >= 100:
+        # Counts arrive as floats after table joins; never print "13.0" for a
+        # count, and never pad a whole-numbered percentage with a false decimal.
+        if float(value).is_integer():
             return f"{int(value):,}"
         return f"{float(value):,.{decimals}f}"
     return str(value)
@@ -71,6 +73,9 @@ def write_frame(frame: pd.DataFrame, stem: Path) -> None:
     )
 
 
+MIDRULE = "\\midrule"
+
+
 def tabular(
     headers: Iterable[str],
     rows: Iterable[Iterable[Any]],
@@ -81,6 +86,9 @@ def tabular(
     lines.append(" & ".join(latex_escape(header) for header in headers) + r" \\")
     lines.append("\\midrule")
     for row in rows:
+        if row == MIDRULE:
+            lines.append("\\midrule")
+            continue
         cells = []
         for value in row:
             if isinstance(value, (int, float, np.integer, np.floating)) and not isinstance(value, bool):
@@ -319,7 +327,26 @@ def paper_tables(results: FinalResults, table_dir: Path) -> None:
         tabular(
             ["Class", "Result", "Disposition"],
             evidence.itertuples(index=False, name=None),
-            r"lp{0.28\textwidth}p{0.52\textwidth}",
+            r"l>{\raggedright\arraybackslash}p{0.28\textwidth}"
+            r">{\raggedright\arraybackslash}p{0.52\textwidth}",
+        ),
+        encoding="utf-8",
+    )
+
+    boundary = results.tables["15_evidence_boundary"]
+    boundary_rows = []
+    previous_scope = None
+    for scope, statement in boundary.itertuples(index=False, name=None):
+        if previous_scope is not None and scope != previous_scope:
+            boundary_rows.append(MIDRULE)
+        boundary_rows.append(("" if scope == previous_scope else scope, statement))
+        previous_scope = scope
+    (table_dir / "paper_07_evidence_boundary.tex").write_text(
+        tabular(
+            ["Scope", "Statement"],
+            boundary_rows,
+            r">{\raggedright\arraybackslash}p{0.20\textwidth}"
+            r">{\raggedright\arraybackslash}p{0.72\textwidth}",
         ),
         encoding="utf-8",
     )
@@ -350,6 +377,12 @@ def latex_macros(metrics: dict[str, Any]) -> str:
         ("CrossBorderLooHigh", "cross_border_loo_max_pct", 1),
         ("ModalUinPct", "modal_uin_pooled_pct", 1),
         ("ModalUinCount", "modal_uin_target_count", 0),
+        ("TargetsPerUinMean", "targets_per_uin_mean", 1),
+        ("TargetsPerUinMedian", "targets_per_uin_median", 0),
+        ("LargestUinTargets", "largest_uin_targets", 0),
+        ("SingleTargetUins", "single_target_uins", 0),
+        ("SingleTargetUinPct", "single_target_uin_pct", 1),
+        ("TopTenUinPct", "top_ten_uin_target_pct", 1),
         ("ModalUinEqualPct", "modal_uin_equal_parent_pct", 1),
         ("ModalUinMedianPct", "modal_uin_median_parent_pct", 1),
         ("ObservedSubtreeMedian", "largest_observed_subtree_median_pct", 1),
@@ -357,12 +390,26 @@ def latex_macros(metrics: dict[str, Any]) -> str:
         ("DagDominatorMedian", "strict_dag_dominator_median_pct", 1),
         ("ConcentrationParents", "concentration_parent_count", 0),
         ("ObservedIntermediaries", "observed_intermediary_nodes", 0),
+        ("ObservedParentEdges", "observed_parent_edges", 0),
+        ("HoldNothingPct", "entities_holding_nothing_pct", 1),
+        ("OneChildHolders", "holders_with_one_child", 0),
+        ("OneChildHolderPct", "holders_with_one_child_pct", 1),
+        ("HubNodes", "hub_nodes", 0),
+        ("HubEdges", "hub_edges", 0),
+        ("HubEdgeSharePct", "hub_edge_share_pct", 1),
         ("DutchGatewayMean", "netherlands_gateway_mean", 1),
-        ("DutchGatewayMedian", "netherlands_gateway_median", 1),
+        ("DutchGatewayMedian", "netherlands_gateway_median", 0),
         ("DutchGatewayEqualMean", "netherlands_gateway_equal_parent_mean", 1),
         ("DutchGatewayLooLow", "netherlands_gateway_loo_min", 1),
         ("DutchGatewayLooHigh", "netherlands_gateway_loo_max", 1),
         ("DutchGatewayRobustMean", "netherlands_gateway_robust_subset_mean", 1),
+        ("DutchGateways", "netherlands_gateways", 0),
+        ("DutchGatewayParents", "netherlands_gateway_parents", 0),
+        ("MauritiusGatewayMean", "mauritius_gateway_mean", 1),
+        ("MauritiusGatewayMedian", "mauritius_gateway_median", 0),
+        ("DutchGatewayUsMean", "united_states_gateway_mean", 1),
+        ("UsGatewayMedian", "united_states_gateway_median", 1),
+        ("UsGateways", "united_states_gateways", 0),
         ("DutchUpstreamPct", "netherlands_upstream_pooled_pct", 1),
         ("DutchUpstreamEqualPct", "netherlands_upstream_equal_parent_pct", 1),
         ("TopThreeCount", "top_three_upstream_count", 0),
@@ -452,13 +499,23 @@ UINs, {metrics['observed_level0_targets']:,} observed level-0 targets, and
 
 ## Defensible core results
 
-1. **Denominators are first order.** Source-panel length reverses parent
+1. **One mapping channel stands for a variable amount of structure.** The
+   {metrics['uins']:,} channels resolve to {metrics['target_occurrences']:,}
+   targets: mean {metrics['targets_per_uin_mean']:.1f}, median
+   {metrics['targets_per_uin_median']:.0f}. The distribution is skewed:
+   {metrics['single_target_uins']:,} channels
+   ({metrics['single_target_uin_pct']:.1f}%) resolve to a single target while
+   the ten largest carry {metrics['top_ten_uin_target_pct']:.1f}% of targets,
+   and {metrics['reported_level2plus_pct']:.1f}% of targets sit at reported
+   level 2 or deeper. This describes the supplied mapping only; the file
+   contains no evidence on registration practice or UIN semantics.
+2. **Denominators are first order.** Source-panel length reverses parent
    rankings; firm and jurisdiction results use target/entity and parent-balanced
    denominators, never raw rows.
-2. **Parent architectures are multidimensional.** Size, geographic breadth,
+3. **Parent architectures are multidimensional.** Size, geographic breadth,
    reported depth, observed graph distance, branching, stake structure, and
    channel concentration do not collapse to one defensible complexity score.
-3. **Dominant channels and large subtrees are common.** The modal UIN contains
+4. **Dominant channels and large subtrees are common.** The modal UIN contains
    {metrics['modal_uin_pooled_pct']:.1f}% of targets pooled and
    {metrics['modal_uin_equal_parent_pct']:.1f}% under equal-parent weighting.
    Among 24 groups with at least 15 targets, the median largest observed
@@ -468,7 +525,7 @@ UINs, {metrics['observed_level0_targets']:,} observed level-0 targets, and
    dominator sensitivity and {metrics['named_node_inclusive_subtree_median_pct']:.1f}%
    when named-but-unscraped parents are admitted as nodes. These are mapping and
    observed-topology estimands, not verified legal chokepoints.
-4. **Gateway jurisdictions occupy different network roles.** Dutch observed
+5. **Gateway jurisdictions occupy different network roles.** Dutch observed
    level-0 gateways have a mean of {metrics['netherlands_gateway_mean']:.1f}
    and median of {metrics['netherlands_gateway_median']:.1f} downstream
    normalized entities, compared with a parent-equal mean of
@@ -476,12 +533,12 @@ UINs, {metrics['observed_level0_targets']:,} observed level-0 targets, and
    strictly upstream of {metrics['netherlands_upstream_pooled_pct']:.1f}% of
    target paths, but {metrics['netherlands_upstream_equal_parent_pct']:.1f}%
    under equal-parent weighting.
-5. **A majority of nonroot edges cross jurisdictions.** The standardized-label
+6. **A majority of nonroot edges cross jurisdictions.** The standardized-label
    estimate is {metrics['cross_border_pooled_pct']:.1f}%, the equal-parent
    estimate is {metrics['cross_border_equal_parent_pct']:.1f}%, and the
    leave-one-parent-out range is {metrics['cross_border_loo_min_pct']:.1f}–
    {metrics['cross_border_loo_max_pct']:.1f}%.
-6. **Depth is definition- and parent-sensitive.** Reported level 5+ contains
+7. **Depth is definition- and parent-sensitive.** Reported level 5+ contains
    {metrics['reported_level5plus_count']:,} targets
    ({metrics['reported_level5plus_pct']:.1f}%), but the equal-parent mean is
    {metrics['reported_level5plus_equal_parent_pct']:.1f}% and reconstructed
@@ -551,14 +608,16 @@ From the repository root:
 ```bash
 python -m src.analysis.run_pipeline --clean
 python -m src.analysis.validate
-pdflatex -interaction=nonstopmode -halt-on-error -output-directory=paper paper/main.tex
-pdflatex -interaction=nonstopmode -halt-on-error -output-directory=paper paper/main.tex
+for pass in 1 2 3; do
+  pdflatex -interaction=nonstopmode -halt-on-error -output-directory=paper paper/main.tex
+done
 ```
 
 The first command reconstructs all units, entities, edges, paths, tables,
 figures, `RESULTS.md`, `REPLICATION.md`, and the generated LaTeX number macros.
 The second command rebuilds into a temporary directory and checks hashes and
-central invariants. The two LaTeX passes compile cross-references.
+central invariants. Three LaTeX passes are required: the third resolves the
+table and figure numbers cited in the text, and the build is warning-free.
 
 ## Canonical definitions
 
@@ -611,8 +670,10 @@ evidence; they do not estimate population performance.
 - `outputs/final/manifest.json`: input and output hashes plus software versions.
 - `paper/main.pdf`: compiled paper.
 
-All generated output is deterministic apart from PDF metadata written by the
-TeX engine; validation hashes the analysis outputs, not LaTeX build auxiliaries.
+Every generated analysis output is byte-reproducible, including figure PDFs,
+which are written without a creation timestamp. Validation hashes those outputs;
+it does not hash LaTeX build auxiliaries or `paper/main.pdf`, whose bytes carry
+TeX-engine metadata.
 """
 
 

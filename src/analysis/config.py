@@ -97,6 +97,8 @@ PARENT_SHORT = {
 
 COUNTRY_SHORT = {
     "UNITED STATES OF AMERICA": "United States",
+    "IFSC GIFT CITY": "IFSC GIFT City",
+    "BRITISH VIRGIN ISLANDS": "British Virgin Is.",
     "UNITED ARAB EMIRATES": "UAE",
     "UNITED KINGDOM": "United Kingdom",
     "NETHERLANDS": "Netherlands",

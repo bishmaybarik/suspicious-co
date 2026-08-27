@@ -160,3 +160,66 @@ No commits, pushes, merges, rebases, cherry-picks, resets, checkouts of another
 branch, or history rewrites were performed. `origin/agent/codex` was inspected
 read-only at `722a0c04312b13f351ea0c1faaed867c2cccc681`. The commit subject for
 the controller is in `.agent_runtime/commit_message.txt`.
+
+---
+
+# Increment 4 — final synthesis audit and paper completion
+
+**Phase:** final synthesis. **Status:** complete.
+**Last updated:** 2026-08-27.
+**Handoff received from:** Codex/GPT-5.6 Sol, commit `3653505`
+(`research(synthesis): build canonical analysis and draft paper`), which
+reached its usage limit mid-synthesis.
+
+## What this increment did
+
+Audited the canonical pipeline against both `FINAL_ADJUDICATION.md` documents,
+finished the wiring Codex did not complete, repaired table and figure defects,
+substantially rewrote the paper, and produced
+`research/synthesis/FINAL_AUDIT.md`.
+
+The Codex handoff claims were checked rather than trusted. Three were accurate
+(pipeline runs, validation passes, PDF compiles). Two were incomplete: the
+documented two-pass LaTeX build left stale cross-references, and the "61
+deterministic outputs" figure excluded the figure PDFs, which were not
+reproducible because they carried a creation timestamp.
+
+## Changes to the canonical pipeline
+
+- Figure PDFs written without a creation timestamp; the validator now covers
+  73 outputs including every figure, and `manifest.json` is stable.
+- New metrics: targets-per-UIN distribution, US and Mauritius gateway
+  amplification, and the branching/hub statistics.
+- New generated table `15_evidence_boundary` and its paper view.
+- `human_number` no longer prints integer counts as floats.
+- Financial audit row units corrected so numerator and percentage share a unit.
+- Figure 5 labels restricted to jurisdictions spanning at least five parents,
+  so few-parent leverage cells are not visually promoted.
+- Figure 1b, 7b, 8 and 2 corrected for denominator, ordering, coverage and
+  label-association defects.
+
+## Changes to the paper
+
+Added the register-expansion result (Core in both adjudications, missing from
+the draft) and the layering-versus-branching result (Supporting in both).
+Rewrote the introduction around an explicit central question; added a
+hierarchy-definition subsection, an evidence-boundary table, an open-questions
+subsection, and a measurement-implications section; added competing
+interpretations to the gateway result; added connective text throughout.
+
+Nothing classified fragile, unresolved or rejected was revived. No external
+source, citation or institutional claim was introduced.
+
+## Verification
+
+Full clean reproduction from a deleted `outputs/final/`: pipeline exit 0,
+validation exit 0 (73 outputs byte-identical), three pdflatex passes producing
+a 29-page PDF with zero warnings. Headline counts were recomputed
+independently from the Stata input, and an independently written graph builder
+reproduced the Dutch gateway mean (33.5 against 34.8) and the largest-subtree
+median (43.1% against 43.2%) within the documented definitional band.
+
+## Git
+
+No commits, pushes, merges, rebases, resets or history rewrites. The commit
+subject for the controller is in `.agent_runtime/commit_message.txt`.

@@ -13,10 +13,14 @@ from .run_pipeline import build
 
 
 def stable_outputs(root: Path) -> list[Path]:
-    """Return outputs whose bytes should not contain run-time metadata."""
+    """Return outputs whose bytes should not contain run-time metadata.
+
+    Figure PDFs are written without a creation timestamp, so every analytical
+    output except the manifest itself is byte-comparable.
+    """
 
     files = sorted((root / "tables").glob("*"))
-    files.extend(sorted((root / "figures").glob("*.png")))
+    files.extend(sorted((root / "figures").glob("*")))
     files.append(root / "metrics.json")
     return [path for path in files if path.is_file()]
 

@@ -7,7 +7,7 @@ Ready rows with blank units,516,560,92.14285714,ready rows
 Targets with any source,847,1834,46.18320611,targets
 Targets with parsed balance sheet,444,1834,24.20937841,targets
 Targets ready at least once,265,1834,14.44929117,targets
-Repeated numeric signatures,51,863,12.05098494,signature clusters; percent is rows involved
+Parsed rows sharing a numeric signature,104,863,12.05098494,parsed rows in 51 signature clusters
 Demonstrated same-URL/different-name reuse clusters,33,51,64.70588235,repeated-signature clusters
 Ready rows unflagged by broad duplicate/sign screen,460,560,82.14285714,not a validated final sample
 Raw ready depth gap,,1834,-6.649533854,percentage points

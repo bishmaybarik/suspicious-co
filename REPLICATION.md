@@ -19,14 +19,16 @@ From the repository root:
 ```bash
 python -m src.analysis.run_pipeline --clean
 python -m src.analysis.validate
-pdflatex -interaction=nonstopmode -halt-on-error -output-directory=paper paper/main.tex
-pdflatex -interaction=nonstopmode -halt-on-error -output-directory=paper paper/main.tex
+for pass in 1 2 3; do
+  pdflatex -interaction=nonstopmode -halt-on-error -output-directory=paper paper/main.tex
+done
 ```
 
 The first command reconstructs all units, entities, edges, paths, tables,
 figures, `RESULTS.md`, `REPLICATION.md`, and the generated LaTeX number macros.
 The second command rebuilds into a temporary directory and checks hashes and
-central invariants. The two LaTeX passes compile cross-references.
+central invariants. Three LaTeX passes are required: the third resolves the
+table and figure numbers cited in the text, and the build is warning-free.
 
 ## Canonical definitions
 
@@ -79,5 +81,7 @@ evidence; they do not estimate population performance.
 - `outputs/final/manifest.json`: input and output hashes plus software versions.
 - `paper/main.pdf`: compiled paper.
 
-All generated output is deterministic apart from PDF metadata written by the
-TeX engine; validation hashes the analysis outputs, not LaTeX build auxiliaries.
+Every generated analysis output is byte-reproducible, including figure PDFs,
+which are written without a creation timestamp. Validation hashes those outputs;
+it does not hash LaTeX build auxiliaries or `paper/main.pdf`, whose bytes carry
+TeX-engine metadata.

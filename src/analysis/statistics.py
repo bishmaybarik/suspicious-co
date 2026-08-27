@@ -894,7 +894,9 @@ def financial_audit(
         ("Targets with any source", int(coverage["any_source_found"].sum()), len(coverage), percent(coverage["any_source_found"].sum(), len(coverage)), "targets"),
         ("Targets with parsed balance sheet", int(coverage["any_balance_parsed"].sum()), len(coverage), percent(coverage["any_balance_parsed"].sum(), len(coverage)), "targets"),
         ("Targets ready at least once", int(coverage["any_ready"].sum()), len(coverage), percent(coverage["any_ready"].sum(), len(coverage)), "targets"),
-        ("Repeated numeric signatures", evidence_metrics["repeated_signatures"], evidence_metrics["parsed_rows"], percent(evidence_metrics["repeated_rows"], evidence_metrics["parsed_rows"]), "signature clusters; percent is rows involved"),
+        # Numerator and percentage must share a unit: report the rows involved,
+        # and carry the cluster count in the unit label.
+        ("Parsed rows sharing a numeric signature", evidence_metrics["repeated_rows"], evidence_metrics["parsed_rows"], percent(evidence_metrics["repeated_rows"], evidence_metrics["parsed_rows"]), f"parsed rows in {evidence_metrics['repeated_signatures']} signature clusters"),
         ("Demonstrated same-URL/different-name reuse clusters", evidence_metrics["proven_reuse_clusters"], evidence_metrics["repeated_signatures"], percent(evidence_metrics["proven_reuse_clusters"], evidence_metrics["repeated_signatures"]), "repeated-signature clusters"),
         ("Ready rows unflagged by broad duplicate/sign screen", evidence_metrics["broad_unflagged_ready_rows"], len(ready), percent(evidence_metrics["broad_unflagged_ready_rows"], len(ready)), "not a validated final sample"),
         ("Raw ready depth gap", np.nan, len(coverage), raw_gap, "percentage points"),
@@ -981,7 +983,10 @@ def structural_robustness(
         denominator = data.occurrences["parent"].ne(parent).sum()
         modal_loo.append(percent(numerator, denominator))
 
-    netherlands = gateway_summary.set_index("gateway_country").loc["NETHERLANDS"]
+    gateway_indexed = gateway_summary.set_index("gateway_country")
+    netherlands = gateway_indexed.loc["NETHERLANDS"]
+    mauritius = gateway_indexed.loc["MAURITIUS"]
+    united_states = gateway_indexed.loc["UNITED STATES OF AMERICA"]
     role = roles.set_index("jurisdiction")
     dutch = role.loc["NETHERLANDS"]
 
@@ -1061,6 +1066,13 @@ def structural_robustness(
         "netherlands_gateway_robust_subset_mean": netherlands[
             "mean_descendants_without_majority_child_branch"
         ],
+        "mauritius_gateway_mean": mauritius["mean_descendants"],
+        "mauritius_gateway_median": mauritius["median_descendants"],
+        "united_states_gateway_mean": united_states["mean_descendants"],
+        "united_states_gateway_median": united_states["median_descendants"],
+        "united_states_gateways": united_states["gateways"],
+        "netherlands_gateways": netherlands["gateways"],
+        "netherlands_gateway_parents": netherlands["parents"],
         "netherlands_upstream_pooled_pct": dutch["pooled_target_path_pct"],
         "netherlands_upstream_equal_parent_pct": dutch[
             "equal_parent_target_path_pct"
@@ -1132,6 +1144,57 @@ def evidence_classification() -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["classification", "result", "reason"])
 
 
+def evidence_boundary() -> pd.DataFrame:
+    """Separate what the dataset measures from what it cannot identify."""
+
+    established = [
+        "Unit counts: source rows, preferred target-years, target occurrences, "
+        "normalized entity candidates, edges, paths, UINs, and parent buckets.",
+        "Reported parent-child topology and supplied country labels, subject to "
+        "the documented unresolved-node and name-resolution limits.",
+        "Reported level and reconstructed graph distance, reported separately, "
+        "and the targets at which they disagree.",
+        "Descendant counts below observed first-hop entities, by first-hop "
+        "jurisdiction, under gateway, parent-equal, and omission weighting.",
+        "Concentration of a parent network behind one mapping channel, one "
+        "observed subtree, or one strict graph dominator.",
+        "Residence, unique-intermediary, and strictly-upstream path exposure of "
+        "each jurisdiction, each with its own denominator.",
+        "Share of nonroot edges whose child and parent country labels differ.",
+        "Internal contradictions between recorded mapping stakes and AOC-1 "
+        "shareholding, and the coverage of each ownership field.",
+        "Financial source, parse, readiness, sign, and P&L gates, and the reuse "
+        "of identical extracted evidence across differently named targets.",
+        "Association between holding-type naming and observed holder status, "
+        "within parent-by-country cells.",
+    ]
+    external = [
+        "Whether a named entity is legally identical to a same-name entity, an "
+        "alias, or a jointly held vehicle.",
+        "Whether reported level or reconstructed graph distance is the legally "
+        "correct ownership distance.",
+        "Whether UIN characters encode a registering office, an investment "
+        "type, or a registration year.",
+        "Whether any entity is a tax, treaty, financing, acquisition, "
+        "governance, or operating vehicle.",
+        "Whether a route was designed or inherited through acquisition, and "
+        "whether it reflects current legal control.",
+        "Whether removing a jurisdiction would detach, reroute, or tax the "
+        "entities measured below it.",
+        "Whether any jurisdiction belongs in a 'financial centre' category; the "
+        "list used here is maintained, not observed.",
+        "Whether recorded stakes measure economic ownership or control at any "
+        "specific date.",
+        "Whether extracted financial values are correct, comparable across "
+        "currencies and units, or representative of the underlying firms.",
+        "Whether the 28 supplied parent buckets represent Indian outward "
+        "investment, or any other population.",
+    ]
+    rows = [("Established by this dataset", item) for item in established]
+    rows += [("Requires external evidence", item) for item in external]
+    return pd.DataFrame(rows, columns=["scope", "statement"])
+
+
 def build_final_results(data: AnalysisData) -> FinalResults:
     evidence_detail, evidence_metrics = repeated_evidence_audit(data)
     construction = sample_construction(data, evidence_metrics)
@@ -1185,12 +1248,15 @@ def build_final_results(data: AnalysisData) -> FinalResults:
     modal_uin_count = int(
         data.occurrences.groupby(["parent", "uin"]).size().groupby("parent").max().sum()
     )
-    observed_intermediary_count = int(
-        data.logical_edges.loc[
-            data.logical_edges["parent_node_type"].eq("observed_entity"),
-            "parent_node_id",
-        ].nunique()
-    )
+    targets_per_uin = data.occurrences.groupby("uin").size()
+    top_ten_uin_targets = int(targets_per_uin.nlargest(10).sum())
+    observed_parent_edges = data.logical_edges[
+        data.logical_edges["parent_node_type"].eq("observed_entity")
+    ]
+    observed_intermediary_count = int(observed_parent_edges["parent_node_id"].nunique())
+    # Out-degree of the observed entities that hold at least one other entity.
+    out_degree = observed_parent_edges.groupby("parent_node_id").size()
+    hub_degrees = out_degree[out_degree.ge(10)]
     deep_audit = depth_summary.set_index("statistic")
     tata_communications = parent_table.set_index("parent_short").loc[
         "Tata Communications"
@@ -1279,7 +1345,27 @@ def build_final_results(data: AnalysisData) -> FinalResults:
             data.occurrences["level"].gt(0).sum(),
         ),
         "modal_uin_target_count": modal_uin_count,
+        "targets_per_uin_mean": float(targets_per_uin.mean()),
+        "targets_per_uin_median": float(targets_per_uin.median()),
+        "largest_uin_targets": int(targets_per_uin.max()),
+        "single_target_uins": int(targets_per_uin.eq(1).sum()),
+        "single_target_uin_pct": percent(
+            targets_per_uin.eq(1).sum(), len(targets_per_uin)
+        ),
+        "top_ten_uin_target_pct": percent(top_ten_uin_targets, len(data.occurrences)),
         "concentration_parent_count": len(concentration),
+        "observed_parent_edges": len(observed_parent_edges),
+        "entities_holding_nothing_pct": percent(
+            len(data.group_entities) - observed_intermediary_count,
+            len(data.group_entities),
+        ),
+        "holders_with_one_child": int(out_degree.eq(1).sum()),
+        "holders_with_one_child_pct": percent(
+            out_degree.eq(1).sum(), len(out_degree)
+        ),
+        "hub_nodes": int(len(hub_degrees)),
+        "hub_edges": int(hub_degrees.sum()),
+        "hub_edge_share_pct": percent(hub_degrees.sum(), len(observed_parent_edges)),
         "observed_intermediary_nodes": observed_intermediary_count,
         "deep_manufacturing_count": int(
             deep_audit.loc[
@@ -1327,6 +1413,7 @@ def build_final_results(data: AnalysisData) -> FinalResults:
         "12_missing_parent_nodes": missing_parents,
         "13_duplicate_evidence_clusters": evidence_detail,
         "14_evidence_classification": evidence_classification(),
+        "15_evidence_boundary": evidence_boundary(),
     }
     plot_data = {
         "parent_architecture": parent_table,

@@ -1,17 +1,17 @@
-| statistic                                           |   numerator |   denominator |   value | unit                                         |
-|:----------------------------------------------------|------------:|--------------:|--------:|:---------------------------------------------|
-| Preferred target-year rows                          |    3567.000 |          3567 | 100.000 | preferred target-years                       |
-| Ready rows                                          |     560.000 |          3567 |  15.699 | preferred target-years                       |
-| Sign-plausible ready rows                           |     521.000 |           560 |  93.036 | ready rows                                   |
-| P&L-valid rows                                      |     105.000 |           560 |  18.750 | ready rows                                   |
-| Ready rows with blank units                         |     516.000 |           560 |  92.143 | ready rows                                   |
-| Targets with any source                             |     847.000 |          1834 |  46.183 | targets                                      |
-| Targets with parsed balance sheet                   |     444.000 |          1834 |  24.209 | targets                                      |
-| Targets ready at least once                         |     265.000 |          1834 |  14.449 | targets                                      |
-| Repeated numeric signatures                         |      51.000 |           863 |  12.051 | signature clusters; percent is rows involved |
-| Demonstrated same-URL/different-name reuse clusters |      33.000 |            51 |  64.706 | repeated-signature clusters                  |
-| Ready rows unflagged by broad duplicate/sign screen |     460.000 |           560 |  82.143 | not a validated final sample                 |
-| Raw ready depth gap                                 |     nan     |          1834 |  -6.650 | percentage points                            |
-| Parent fixed-effect ready depth gap                 |     nan     |          1834 |  -2.418 | percentage points                            |
-| Parent-FE LOO minimum                               |     nan     |          1834 |  -6.620 | percentage points                            |
-| Parent-FE LOO maximum                               |     nan     |          1834 |  -0.771 | percentage points                            |
+| statistic                                           |   numerator |   denominator |   value | unit                                 |
+|:----------------------------------------------------|------------:|--------------:|--------:|:-------------------------------------|
+| Preferred target-year rows                          |    3567.000 |          3567 | 100.000 | preferred target-years               |
+| Ready rows                                          |     560.000 |          3567 |  15.699 | preferred target-years               |
+| Sign-plausible ready rows                           |     521.000 |           560 |  93.036 | ready rows                           |
+| P&L-valid rows                                      |     105.000 |           560 |  18.750 | ready rows                           |
+| Ready rows with blank units                         |     516.000 |           560 |  92.143 | ready rows                           |
+| Targets with any source                             |     847.000 |          1834 |  46.183 | targets                              |
+| Targets with parsed balance sheet                   |     444.000 |          1834 |  24.209 | targets                              |
+| Targets ready at least once                         |     265.000 |          1834 |  14.449 | targets                              |
+| Parsed rows sharing a numeric signature             |     104.000 |           863 |  12.051 | parsed rows in 51 signature clusters |
+| Demonstrated same-URL/different-name reuse clusters |      33.000 |            51 |  64.706 | repeated-signature clusters          |
+| Ready rows unflagged by broad duplicate/sign screen |     460.000 |           560 |  82.143 | not a validated final sample         |
+| Raw ready depth gap                                 |     nan     |          1834 |  -6.650 | percentage points                    |
+| Parent fixed-effect ready depth gap                 |     nan     |          1834 |  -2.418 | percentage points                    |
+| Parent-FE LOO minimum                               |     nan     |          1834 |  -6.620 | percentage points                    |
+| Parent-FE LOO maximum                               |     nan     |          1834 |  -0.771 | percentage points                    |
