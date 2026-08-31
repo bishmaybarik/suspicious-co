@@ -1,0 +1,3 @@
+sample,denominator,holding_name_entities,parents_with_holding_name,holder_rate_holding_name_pct,holder_rate_other_name_pct,raw_gap_pp,outcome_only_demeaned_gap_pp,proper_parent_country_fe_pp,proper_fe_loo_min_pp,proper_fe_loo_max_pp,informative_parent_country_cells,observations_in_informative_cells,parents_in_informative_cells,equal_parent_raw_gap_pp,median_parent_raw_gap_pp
+target occurrences,1834,177,24,64.40677966,17.56185878,46.84492088,23.19911404,36.33891291,34.7647999,38.3256386,68,806,23,48.22694212,44.44444444
+parent-scoped normalized entities,1830,176,24,64.20454545,17.53325272,46.67129273,23.00794618,36.02559854,34.40705946,38.01150053,68,804,23,48.20741447,44.44444444

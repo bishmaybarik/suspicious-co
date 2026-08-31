@@ -1,0 +1,5 @@
+sample,numerator,denominator,pooled_pct,equal_parent_pct,median_parent_pct,loo_min_pct,loo_max_pct,parents_with_zero_pct,parents_above_50_pct
+all target paths,1140,1834,62.15921483,46.6524504,49.43960149,59.58823529,63.58059119,5,14
+complete target paths,1075,1687,63.72258447,49.48515529,54.22555628,61.09324759,65.30984204,5,15
+exclude Breakthrough children,1031,1725,59.76811594,44.94025074,44.78609626,56.81961031,62.21001221,5,13
+parent-scoped normalized entities,1138,1830,62.18579235,46.67974802,49.43960149,59.61084906,63.61095584,5,14

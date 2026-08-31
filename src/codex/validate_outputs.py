@@ -1,0 +1,294 @@
+#!/usr/bin/env python3
+"""Validate hierarchy invariants and optionally rebuild all outputs in isolation."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+import pandas as pd
+from PIL import Image
+
+
+ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_OUTPUT = ROOT / "outputs/codex"
+PIPELINE = ROOT / "src/codex/research_pipeline.py"
+REVIEW_PIPELINE = ROOT / "src/codex/review_increment.py"
+FINAL_PIPELINE = ROOT / "src/codex/final_adjudication.py"
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        raise AssertionError(message)
+
+
+def validate(output: Path) -> dict[str, int]:
+    data = output / "data"
+    tables = output / "tables"
+    metrics = json.loads((output / "key_metrics.json").read_text(encoding="utf-8"))
+
+    occurrences = pd.read_csv(data / "entity_occurrences.csv")
+    group_entities = pd.read_csv(data / "unique_entities_parent_scoped.csv")
+    global_entities = pd.read_csv(data / "unique_entities_global.csv")
+    edge_occurrences = pd.read_csv(data / "parent_child_edge_occurrences.csv")
+    logical_edges = pd.read_csv(data / "parent_child_edges.csv")
+    paths = pd.read_csv(data / "ownership_paths.csv")
+    path_steps = pd.read_csv(data / "ownership_path_steps.csv")
+    preferred = pd.read_csv(data / "preferred_financial_panel.csv")
+    invariance = pd.read_csv(tables / "structural_invariance.csv")
+    denominators = pd.read_csv(tables / "row_denominators.csv").set_index("denominator")
+
+    expected = metrics["counts"]
+    require(len(occurrences) == expected["target_occurrences"], "target count mismatch")
+    require(occurrences["target_id"].is_unique, "target_id is not unique in occurrences")
+    require(
+        len(group_entities) == expected["parent_scoped_normalized_entities"],
+        "parent-scoped entity count mismatch",
+    )
+    require(group_entities["group_entity_id"].is_unique, "group entity IDs not unique")
+    require(
+        len(global_entities) == expected["global_normalized_entities"],
+        "global entity count mismatch",
+    )
+    require(global_entities["global_entity_id"].is_unique, "global IDs not unique")
+    require(len(edge_occurrences) == len(occurrences), "one edge per target violated")
+    require(edge_occurrences["child_target_id"].is_unique, "edge child targets repeat")
+    require(
+        int(logical_edges["target_occurrences"].sum()) == len(occurrences),
+        "logical-edge multiplicities do not recover targets",
+    )
+    require(len(paths) == len(occurrences), "one path record per target violated")
+    require(paths["target_id"].is_unique, "path targets repeat")
+    require(not paths["path_status"].eq("cycle_detected").any(), "cycle detected")
+    require(
+        set(paths["target_id"]) == set(occurrences["target_id"]),
+        "path/occurrence target sets differ",
+    )
+    terminal_steps = path_steps[path_steps["step_from_terminal"].eq(0)]
+    require(
+        terminal_steps["terminal_target_id"].nunique() == len(paths),
+        "each path must have a terminal step",
+    )
+    require(
+        int(invariance["targets_with_conflict"].sum()) == 0,
+        "structural fields vary within target_id",
+    )
+    require(
+        len(preferred)
+        == int(denominators.loc["preferred_target_year_rows", "count"]),
+        "preferred panel count mismatch",
+    )
+    key = preferred[["target_id", "fiscal_year"]].fillna("<MISSING>")
+    require(not key.duplicated().any(), "preferred target-year key repeats")
+    require(
+        preferred.loc[preferred["balance_ready"].astype(bool), "accounting_identity_ok"]
+        .eq(1)
+        .all(),
+        "ready rows fail upstream accounting identity flag",
+    )
+    require(
+        int(paths["path_status"].eq("complete_to_ultimate_parent").sum())
+        == expected["complete_paths"],
+        "complete path count mismatch",
+    )
+
+    figure_count = 0
+    for figure in sorted((output / "figures").glob("*.png")):
+        with Image.open(figure) as image:
+            require(image.width >= 1000 and image.height >= 700, f"small figure: {figure}")
+            image.verify()
+        figure_count += 1
+    require(figure_count >= 6, "expected at least six figures")
+
+    review_table_count = 0
+    review_figure_count = 0
+    review = output / "review"
+    if review.exists():
+        review_metrics = json.loads(
+            (review / "review_metrics.json").read_text(encoding="utf-8")
+        )
+        require(
+            review_metrics["reviewed_commit"]
+            == "5ab6cb5944ad6fe8193f03b71f7a918ac4d24076",
+            "unexpected reviewed commit",
+        )
+        gateway_parent = pd.read_csv(
+            review / "tables/gateway_dependency_by_parent.csv"
+        )
+        stake = pd.read_csv(review / "tables/stake_depth_sensitivity.csv")
+        mismatch = pd.read_csv(review / "tables/depth_mismatch_sensitivity.csv")
+        require(len(gateway_parent) == 28, "review parent count mismatch")
+        require(
+            gateway_parent["target_entities"].sum() == len(occurrences),
+            "review gateway denominator mismatch",
+        )
+        require(
+            int(mismatch.loc[mismatch["counting_unit"].eq("target_id"), "mismatches"].iloc[0])
+            == metrics["hierarchy"]["complete_paths_with_reported_depth_mismatch"],
+            "review mismatch count differs from blind pipeline",
+        )
+        require(
+            stake["sample"].eq("all positive recorded stakes").sum() == 1,
+            "review stake base sample missing",
+        )
+        review_table_count = len(list((review / "tables").glob("*.csv")))
+        for figure in sorted((review / "figures").glob("*.png")):
+            with Image.open(figure) as image:
+                require(
+                    image.width >= 1000 and image.height >= 700,
+                    f"small review figure: {figure}",
+                )
+                image.verify()
+            review_figure_count += 1
+        require(review_table_count >= 15, "expected review tables")
+        require(review_figure_count >= 2, "expected review figures")
+
+    final_table_count = 0
+    final = output / "final"
+    if final.exists():
+        final_metrics = json.loads(
+            (final / "adjudication_metrics.json").read_text(encoding="utf-8")
+        )
+        require(
+            final_metrics["reviewed_claude_commit"]
+            == "79b342b1ae3a473fef40a5c8dc91fa937597185e",
+            "unexpected final reviewed Claude commit",
+        )
+        require(
+            final_metrics["target_occurrences"] == len(occurrences),
+            "final target denominator mismatch",
+        )
+        require(
+            final_metrics["parent_scoped_normalized_entities"]
+            == len(group_entities),
+            "final entity denominator mismatch",
+        )
+        name_signal = pd.read_csv(final / "name_signal_sensitivity.csv")
+        ownership = pd.read_csv(final / "ownership_chain_summary.csv").set_index(
+            "statistic"
+        )
+        classification = pd.read_csv(final / "classification_ledger.csv")
+        require(len(name_signal) == 2, "final name-signal samples missing")
+        require(
+            int(ownership.loc["root-complete paths with all positive stakes", "value"])
+            == final_metrics["complete_positive_ownership_chains"],
+            "final positive-chain count mismatch",
+        )
+        require(
+            set(classification["classification"])
+            == {
+                "CORE RESULT",
+                "SUPPORTING RESULT",
+                "INTERESTING DESCRIPTIVE FACT",
+                "FRAGILE",
+                "UNRESOLVED",
+                "REJECTED",
+            },
+            "final classification categories incomplete",
+        )
+        final_table_count = len(list(final.glob("*.csv")))
+        require(final_table_count == 10, "expected ten final adjudication tables")
+
+    return {
+        "targets": len(occurrences),
+        "group_entities": len(group_entities),
+        "global_entities": len(global_entities),
+        "paths": len(paths),
+        "preferred_rows": len(preferred),
+        "figures": figure_count,
+        "review_tables": review_table_count,
+        "review_figures": review_figure_count,
+        "final_tables": final_table_count,
+    }
+
+
+def compare_rebuild(output: Path) -> int:
+    with tempfile.TemporaryDirectory(prefix="codex-research-rebuild-") as temp:
+        rebuilt = Path(temp) / "outputs"
+        subprocess.run(
+            [sys.executable, str(PIPELINE), "--output", str(rebuilt)],
+            cwd=ROOT,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        subprocess.run(
+            [
+                sys.executable,
+                str(REVIEW_PIPELINE),
+                "--codex-output",
+                str(rebuilt),
+                "--output",
+                str(rebuilt / "review"),
+            ],
+            cwd=ROOT,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        subprocess.run(
+            [
+                sys.executable,
+                str(FINAL_PIPELINE),
+                "--codex-output",
+                str(rebuilt),
+                "--output",
+                str(rebuilt / "final"),
+            ],
+            cwd=ROOT,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        original_files = {
+            path.relative_to(output)
+            for path in output.rglob("*.csv")
+        } | {
+            Path("key_metrics.json"),
+            Path("review/review_metrics.json"),
+            Path("review/manifest.json"),
+            Path("final/adjudication_metrics.json"),
+        }
+        rebuilt_files = {
+            path.relative_to(rebuilt)
+            for path in rebuilt.rglob("*.csv")
+        } | {
+            Path("key_metrics.json"),
+            Path("review/review_metrics.json"),
+            Path("review/manifest.json"),
+            Path("final/adjudication_metrics.json"),
+        }
+        require(original_files == rebuilt_files, "rebuild produced a different output-file set")
+        mismatches = [
+            relative
+            for relative in sorted(original_files)
+            if (output / relative).read_bytes() != (rebuilt / relative).read_bytes()
+        ]
+        require(not mismatches, f"non-deterministic rebuilt outputs: {mismatches}")
+        validate(rebuilt)
+        return len(original_files)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument(
+        "--rebuild", action="store_true", help="re-run pipeline in a temporary directory"
+    )
+    args = parser.parse_args()
+    summary = validate(args.output)
+    if args.rebuild:
+        summary["byte_identical_rebuilt_csv_json_files"] = compare_rebuild(args.output)
+    print(json.dumps(summary, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

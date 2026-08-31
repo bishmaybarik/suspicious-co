@@ -1,0 +1,22 @@
+source_findings,candidate,classification,reason
+X-F001,Denominator and panel-length distortion,CORE RESULT,Raw rows are not firms; parent and country estimates require entity and parent-balanced denominators.
+X-F005 / C-F004,Multidimensional parent architectures,CORE RESULT,"Size, depth, branching, geography, and stake describe different group architectures."
+X-F018 / C-F018,Dominant mapping channels and observed subtrees,CORE RESULT,"Concentration survives parent balance, entity normalization, and a normalized-DAG sensitivity."
+X-F007 / C-F002 / C-F006,Gateway-jurisdiction topology,CORE RESULT,"Dutch and Mauritian intermediary roles survive unique-node, edge, path, parent-weighted, and LOO checks."
+X-F004 / X-F006 / C-F017,Depth measurement and parent concentration,CORE RESULT,"Reported depth is not graph distance, and pooled deep/sector patterns are driven by a few groups."
+X-F008,Cross-border nonroot edges,SUPPORTING RESULT,A majority result is stable to parent weighting and leave-one-parent-out analysis.
+X-F010 / X-F019 / C-F021,Stake zeros and ownership-depth composition,SUPPORTING RESULT,Zeros are unsafe and the pooled ownership gradient is largely parent composition; cumulative no-dilution is not established.
+X-F011 / X-F012 / X-F013 / X-F017 / C-F014,Financial selection and extraction contamination,SUPPORTING RESULT,Coverage is selected and duplicate evidence prevents population financial claims.
+C-F020,Holding-type names predict observed graph role,SUPPORTING RESULT,The proper parent-country fixed-effect estimate is large but needs out-of-sample legal-role validation.
+X-F002 / C-F001,UIN and legal entity are different units,SUPPORTING RESULT,"The mapping multiplicity is exact, but UIN scope and the skewed mean require careful language."
+X-F003 / C-F012,Parent exposure and global company counts differ,SUPPORTING RESULT,Shared and multi-path entity candidates require separate parent-exposure and global-company estimands.
+C-F019,Three-country descendant cover,INTERESTING DESCRIPTIVE FACT,The pooled cover is large but falls under equal-parent weighting and repeats ancestors by descendant.
+X-F014,US resident-entity prominence,INTERESTING DESCRIPTIVE FACT,The US is the largest resident jurisdiction but is not similarly overrepresented as an intermediary.
+C-F010 / C-F011 / C-F012,"Round trips, vessel SPVs, and mirrored consortium paths",INTERESTING DESCRIPTIVE FACT,"Small, interpretable motifs are useful examples but not general results."
+C-F003,Fixed 19-jurisdiction conduit share,FRAGILE,"The descendant-weighted fact reproduces after a missing-country correction, but the list and weighting define the magnitude."
+C-F021 (positive claim),Layering does not dilute ownership,FRAGILE,Only 962 complete paths have all-positive stakes; zeros and orphan paths make the selected-chain conclusion unsafe.
+C-F022,Netherlands-Mauritius regional routing split,FRAGILE,Several modal routes are parent- and subtree-weighted and weaken under equal-parent destination shares.
+C-F008 / C-F009,UIN decoding and gateway vintage,UNRESOLVED,"String regularities reproduce, but substring semantics and policy timing need authoritative external evidence."
+X-F006 sector generalization,Manufacturing entities are generally deeper,REJECTED,Two parents supply 240 of 242 deep manufacturing targets.
+Financial outcome patterns,Depth or jurisdiction predicts financial health,REJECTED,"Selection, missing units, duplicate extraction, and small valid samples preclude the claim."
+Institutional interpretations,"Tax, legal, regulatory, or misconduct mechanism",UNRESOLVED,"The dataset contains topology, not intent, legal treatment, or causal policy evidence."
